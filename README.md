@@ -1,6 +1,10 @@
-# CS2-ThirdPerson
-**WIP ThirdPerson plugin for CS2 expect bugs.**
+# CS2-ThirdPerson Revamped
+**ThirdPerson plugin for CS2 **
 **Command: !tp, !thirdperson (css_thirdperson)**
+
+** Official Plugin : https://github.com/grrhn/ThirdPerson-WIP
+
+** Official Owners : https://github.com/grrhn & https://github.com/Wngui
 
 ![Counter-strike 2 Screenshot 2024 04 07 - 23 46 01 11](https://github.com/UgurhanK/ThirdPerson-WIP/assets/105857708/4d65892b-aa25-4e6d-a58b-68ffb3b7aabe)
 
