@@ -23,7 +23,7 @@ A modern, improved third-person camera plugin for Counter-Strike 2.
 > Requires [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
 
 1. Download or clone this repository.
-2. Place the plugin `.dll` in your `cs2/plugins/` directory.
+2. Place the plugin `.dll` in your `counterstrikesharp/plugins/` directory.
 3. (Optional) Customize the config file at `configs/plugins/ThirdPersonRevamped/ThirdPersonRevamped.json`.
 
 ---
