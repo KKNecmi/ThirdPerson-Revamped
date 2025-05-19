@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>CS2TraceRay</id>
+    <version>1.0.0</version>
+    <title>MyEasySQL</title>
+    <authors>schwarper</authors>
+    <license type="expression">GPL-3.0-only</license>
+    <licenseUrl>https://licenses.nuget.org/GPL-3.0-only</licenseUrl>
+    <readme>README.md</readme>
+    <description>A trace ray library developed for use in Counter Strike 2, in conjunction with the CounterStrikeSharp API. This enables the use of trace ray with TraceMask, Contents and skip enums.</description>
+    <copyright>schwarper</copyright>
+    <repository type="git" url="https://github.com/schwarper/CS2TraceRay" />
+    <dependencies>
+      <group targetFramework="net8.0">
+        <dependency id="CounterStrikeSharp.API" version="1.0.316" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.dll" target="lib\net8.0\CS2TraceRay.dll" />
+    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.xml" target="lib\net8.0\CS2TraceRay.xml" />
+    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\README.md" target="README.md" />
+  </files>
+</package>

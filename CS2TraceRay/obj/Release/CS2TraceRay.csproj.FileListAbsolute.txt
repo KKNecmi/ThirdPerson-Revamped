@@ -1,0 +1,13 @@
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.deps.json
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.pdb
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.xml
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.csproj.AssemblyReference.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.AssemblyInfoInputs.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.AssemblyInfo.cs
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.csproj.CoreCompileInputs.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\refint\CS2TraceRay.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\CS2TraceRay.pdb
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\CS2TraceRay\obj\Release\ref\CS2TraceRay.dll

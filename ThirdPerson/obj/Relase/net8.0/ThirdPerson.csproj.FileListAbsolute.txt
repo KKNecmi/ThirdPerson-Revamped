@@ -1,0 +1,16 @@
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\ThirdPerson.deps.json
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\ThirdPerson.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\ThirdPerson.pdb
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\CS2TraceRay.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\CS2TraceRay.pdb
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\bin\Relase\net8.0\CS2TraceRay.xml
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.csproj.AssemblyReference.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.AssemblyInfoInputs.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.AssemblyInfo.cs
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.csproj.CoreCompileInputs.cache
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPer.E6587F34.Up2Date
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\refint\ThirdPerson.dll
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ThirdPerson.pdb
+C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\ThirdPerson\obj\Relase\net8.0\ref\ThirdPerson.dll

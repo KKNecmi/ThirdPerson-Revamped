@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.317" />
+    <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="MySqlConnector" Version="2.3.6" />
+    <PackageReference Include="YamlDotNet" Version="15.1.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CS2TraceRay\CS2TraceRay.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,453 @@
+using System.Diagnostics.SymbolStore;
+using System.Drawing;
+using System.Text.Json.Serialization;
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Admin;
+using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Utils;
+using VectorSystem = System.Numerics;
+
+namespace ThirdPerson
+{
+    public class ThirdPerson : BasePlugin, IPluginConfig<Config>
+    {
+        public static class DebugLogger
+        {
+            public static void Log(
+                string tag,
+                string message,
+                CCSPlayerController? player = null,
+                object? data = null
+            )
+            {
+                string steamId = player != null ? player.SteamID.ToString() : "Unknown";
+                string fullMessage =
+                    $"[{DateTime.Now:HH:mm:ss}] [{tag}] [Player: {steamId}] {message}";
+                if (data != null)
+                    fullMessage += $" | Data: {data}";
+
+                Console.WriteLine(fullMessage);
+            }
+        }
+
+        public override string ModuleName => "SmurfCatTP";
+        public override string ModuleVersion => "1.0.0-fixed";
+        public override string ModuleAuthor => "Necmi (based on BoinK & UgurhanK)";
+        public override string ModuleDescription => "Improved Third Person with smooth camera";
+
+        public Config Config { get; set; } = null!;
+        public static Config cfg = null!;
+
+        public void OnConfigParsed(Config config)
+        {
+            Config = config;
+            cfg = config;
+        }
+
+        public static Dictionary<CCSPlayerController, CDynamicProp> thirdPersonPool =
+            new Dictionary<CCSPlayerController, CDynamicProp>();
+        public static Dictionary<
+            CCSPlayerController,
+            CPhysicsPropMultiplayer
+        > smoothThirdPersonPool = new Dictionary<CCSPlayerController, CPhysicsPropMultiplayer>();
+
+        public static Dictionary<CCSPlayerController, WeaponList> weapons =
+            new Dictionary<CCSPlayerController, WeaponList>();
+
+        public override void Load(bool hotReload)
+        {
+            RegisterListener<Listeners.OnTick>(OnGameFrame);
+            RegisterEventHandler<EventRoundStart>(OnRoundStart);
+            RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt, HookMode.Pre);
+
+            AddCommand("css_tp", "Allows to use thirdperson", OnTPCommand);
+            AddCommand("css_thirdperson", "Allows to use thirdperson", OnTPCommand);
+            AddCommand(
+                "test",
+                "For debug",
+                (caller, info) =>
+                {
+                    if (caller == null || caller.SteamID != 76561199496608845)
+                        return;
+
+                    caller.PrintToChat("çalışıyor kral");
+                }
+            );
+        }
+
+        public void OnGameFrame()
+        {
+            foreach (var data in thirdPersonPool)
+            {
+                if (
+                    data.Key == null
+                    || !data.Key.IsValid
+                    || !data.Key.PlayerPawn.IsValid
+                    || data.Key.Connected != PlayerConnectedState.PlayerConnected
+                )
+                    continue;
+                data.Value.UpdateCamera(data.Key);
+            }
+
+            foreach (var data in smoothThirdPersonPool)
+            {
+                if (
+                    data.Key == null
+                    || !data.Key.IsValid
+                    || !data.Key.PlayerPawn.IsValid
+                    || data.Key.Connected != PlayerConnectedState.PlayerConnected
+                )
+                    continue;
+                data.Value.UpdateCameraSmooth(data.Key);
+            }
+        }
+
+        private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+        {
+            thirdPersonPool.Clear();
+            smoothThirdPersonPool.Clear();
+            return HookResult.Continue;
+        }
+
+        private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
+        {
+            //Victim
+            var victim = @event.Userid;
+
+            //Attacker
+            var attacker = @event.Attacker;
+
+            if (attacker == null || victim == null)
+                return HookResult.Continue;
+
+            if (
+                thirdPersonPool.ContainsKey(attacker) || smoothThirdPersonPool.ContainsKey(attacker)
+            )
+            {
+                var isInfront = attacker.IsInfrontOfPlayer(victim);
+                if (isInfront)
+                {
+                    victim.PlayerPawn.Value!.Health += @event.DmgHealth;
+                    victim.PlayerPawn.Value!.ArmorValue += @event.DmgArmor;
+                }
+            }
+
+            return HookResult.Continue;
+        }
+
+        public void OnTPCommand(CCSPlayerController? caller, CommandInfo command)
+        {
+            if (Config.UseOnlyAdmin && !AdminManager.PlayerHasPermissions(caller, Config.Flag))
+            {
+                command.ReplyToCommand(ReplaceColorTags(Config.NoPermission));
+                return;
+            }
+
+            if (caller == null || !caller.PawnIsAlive)
+                return;
+
+            if (Config.UseSmooth)
+            {
+                SmoothThirdPerson(caller);
+            }
+            else
+            {
+                DefaultThirdPerson(caller);
+            }
+        }
+
+        public void DefaultThirdPerson(CCSPlayerController caller)
+        {
+            if (!thirdPersonPool.ContainsKey(caller))
+            {
+                CDynamicProp? _cameraProp = Utilities.CreateEntityByName<CDynamicProp>(
+                    "prop_dynamic"
+                );
+
+                if (_cameraProp == null)
+                    return;
+
+                _cameraProp.DispatchSpawn();
+                _cameraProp.SetColor(Color.FromArgb(0, 255, 255, 255));
+                _cameraProp.Teleport(
+                    caller.CalculatePositionInFront(-110, 90),
+                    caller.PlayerPawn.Value!.V_angle,
+                    new Vector()
+                );
+
+                caller.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
+                    .EntityHandle
+                    .Raw;
+                Utilities.SetStateChanged(
+                    caller.PlayerPawn!.Value!,
+                    "CBasePlayerPawn",
+                    "m_pCameraServices"
+                );
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
+                thirdPersonPool.Add(caller, _cameraProp);
+
+                AddTimer(
+                    0.5f,
+                    () =>
+                    {
+                        _cameraProp.Teleport(
+                            caller.CalculatePositionInFront(-110, 90),
+                            caller.PlayerPawn.Value.V_angle,
+                            new Vector()
+                        );
+                    }
+                );
+
+                if (Config.StripOnUse)
+                {
+                    caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = true;
+
+                    if (weapons.ContainsKey(caller))
+                        weapons.Remove(caller);
+
+                    var WeaponList = new WeaponList();
+
+                    foreach (var weapon in caller.PlayerPawn.Value!.WeaponServices!.MyWeapons)
+                    {
+                        if (weapons.ContainsKey(caller))
+                            continue;
+                        if (WeaponList.weapons.ContainsKey(weapon.Value!.DesignerName!))
+                            WeaponList.weapons[weapon.Value!.DesignerName!]++;
+                        WeaponList.weapons.Add(weapon.Value!.DesignerName!, 1);
+                    }
+
+                    weapons.Add(caller, WeaponList);
+                    caller.RemoveWeapons();
+                }
+            }
+            else
+            {
+                caller!.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = uint.MaxValue;
+                AddTimer(
+                    0.3f,
+                    () =>
+                        Utilities.SetStateChanged(
+                            caller.PlayerPawn!.Value!,
+                            "CBasePlayerPawn",
+                            "m_pCameraServices"
+                        )
+                );
+                if (thirdPersonPool[caller] != null && thirdPersonPool[caller].IsValid)
+                    thirdPersonPool[caller].Remove();
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnDeactivated));
+                thirdPersonPool.Remove(caller);
+
+                caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = false;
+
+                if (Config.StripOnUse)
+                {
+                    foreach (var weapon in weapons[caller].weapons)
+                    {
+                        for (int i = 1; i <= weapon.Value; i++)
+                        {
+                            caller.GiveNamedItem(weapon.Key);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void SmoothThirdPerson(CCSPlayerController caller)
+        {
+            if (!smoothThirdPersonPool.ContainsKey(caller))
+            {
+                var _cameraProp = Utilities.CreateEntityByName<CPhysicsPropMultiplayer>(
+                    "prop_physics_multiplayer"
+                );
+
+                if (_cameraProp == null)
+                {
+                    DebugLogger.Log("ERROR", "Camera prop creation failed", caller);
+                    return;
+                }
+
+                _cameraProp.SetModel("models/editor/axis_helper_thick.mdl");
+                _cameraProp.DispatchSpawn();
+                _cameraProp.SetColor(Color.FromArgb(0, 255, 255, 255));
+
+                // Physics ayarları
+                _cameraProp.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NEVER;
+                _cameraProp.Collision.SolidFlags = 12;
+                _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
+
+                // İlk konumlandırma
+                var initialPosition = caller.CalculatePositionInFront(-110, 90);
+                var viewAngle = caller.PlayerPawn.Value.V_angle;
+
+                _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
+
+                // ViewEntity ayarı, zamanlamayla birlikte
+                AddTimer(
+                    0.1f,
+                    () =>
+                    {
+                        if (_cameraProp.IsValid && caller.IsValid && caller.PlayerPawn.IsValid)
+                        {
+                            caller.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = _cameraProp
+                                .EntityHandle
+                                .Raw;
+                            Utilities.SetStateChanged(
+                                caller.PlayerPawn.Value,
+                                "CBasePlayerPawn",
+                                "m_pCameraServices"
+                            );
+
+                            DebugLogger.Log("SET_VIEWENTITY", "Camera set as ViewEntity", caller);
+                        }
+                    }
+                );
+
+                // Pool'a ekle
+                smoothThirdPersonPool.Add(caller, _cameraProp);
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
+
+                // Silahları bırak (isteğe bağlı)
+                if (Config.StripOnUse)
+                {
+                    caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = true;
+
+                    if (weapons.ContainsKey(caller))
+                        weapons.Remove(caller);
+
+                    var WeaponList = new WeaponList();
+
+                    foreach (var weapon in caller.PlayerPawn.Value!.WeaponServices!.MyWeapons)
+                    {
+                        if (weapon?.Value == null)
+                            continue;
+
+                        var name = weapon.Value.DesignerName!;
+                        if (WeaponList.weapons.ContainsKey(name))
+                            WeaponList.weapons[name]++;
+                        else
+                            WeaponList.weapons[name] = 1;
+                    }
+
+                    weapons[caller] = WeaponList;
+                    caller.RemoveWeapons();
+                }
+            }
+            else
+            {
+                // Geri dönüş
+                caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = uint.MaxValue;
+                AddTimer(
+                    0.3f,
+                    () =>
+                    {
+                        Utilities.SetStateChanged(
+                            caller.PlayerPawn.Value,
+                            "CBasePlayerPawn",
+                            "m_pCameraServices"
+                        );
+                    }
+                );
+
+                if (smoothThirdPersonPool[caller].IsValid)
+                    smoothThirdPersonPool[caller].Remove();
+
+                smoothThirdPersonPool.Remove(caller);
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnDeactivated));
+                caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = false;
+
+                if (Config.StripOnUse && weapons.ContainsKey(caller))
+                {
+                    foreach (var weapon in weapons[caller].weapons)
+                    {
+                        for (int i = 0; i < weapon.Value; i++)
+                        {
+                            caller.GiveNamedItem(weapon.Key);
+                        }
+                    }
+                }
+            }
+        }
+
+        public string ReplaceColorTags(string input)
+        {
+            string[] colorPatterns =
+            {
+                "{DEFAULT}",
+                "{DARKRED}",
+                "{LIGHTPURPLE}",
+                "{GREEN}",
+                "{OLIVE}",
+                "{LIME}",
+                "{RED}",
+                "{GREY}",
+                "{YELLOW}",
+                "{SILVER}",
+                "{BLUE}",
+                "{DARKBLUE}",
+                "{ORANGE}",
+                "{PURPLE}",
+            };
+            string[] colorReplacements =
+            {
+                "\x01",
+                "\x02",
+                "\x03",
+                "\x04",
+                "\x05",
+                "\x06",
+                "\x07",
+                "\x08",
+                "\x09",
+                "\x0A",
+                "\x0B",
+                "\x0C",
+                "\x10",
+                "\x0E",
+            };
+
+            for (var i = 0; i < colorPatterns.Length; i++)
+                input = input.Replace(colorPatterns[i], colorReplacements[i]);
+
+            return input;
+        }
+    }
+
+    public class WeaponList
+    {
+        public Dictionary<string, int> weapons = new Dictionary<string, int>();
+    }
+
+    public class Config : BasePluginConfig
+    {
+        [JsonPropertyName("OnActivated")]
+        public string OnActivated { get; set; } = "TP Aktifleşti";
+
+        [JsonPropertyName("OnDeactivated")]
+        public string OnDeactivated { get; set; } = "TP Kapatıldı";
+
+        [JsonPropertyName("Prefix")]
+        public string Prefix { get; set; } = " [{BLUE}FROZEN {DARKRED}JB] ";
+
+        [JsonPropertyName("UseOnlyAdmin")]
+        public bool UseOnlyAdmin { get; set; } = false;
+
+        [JsonPropertyName("OnlyAdminFlag")]
+        public string Flag { get; set; } = "@css/slay";
+
+        [JsonPropertyName("NoPermission")]
+        public string NoPermission { get; set; } = "yetki yok lavuk.";
+
+        [JsonPropertyName("UseSmoothCam")]
+        public bool UseSmooth { get; set; } = true;
+
+        [JsonPropertyName("SmoothCamDuration")]
+        public float SmoothDuration { get; set; } = 0.05f;
+
+        [JsonPropertyName("StripOnUse")]
+        public bool StripOnUse { get; set; } = false;
+    }
+}
