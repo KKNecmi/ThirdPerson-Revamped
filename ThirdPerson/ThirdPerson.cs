@@ -424,13 +424,13 @@ namespace ThirdPerson
     public class Config : BasePluginConfig
     {
         [JsonPropertyName("OnActivated")]
-        public string OnActivated { get; set; } = "TP Aktifleşti";
+        public string OnActivated { get; set; } = "ThirdPerson Activated";
 
         [JsonPropertyName("OnDeactivated")]
-        public string OnDeactivated { get; set; } = "TP Kapatıldı";
+        public string OnDeactivated { get; set; } = "ThirdPerson Deactivated";
 
         [JsonPropertyName("Prefix")]
-        public string Prefix { get; set; } = " [{BLUE}FROZEN {DARKRED}JB] ";
+        public string Prefix { get; set; } = " [{BLUE}ThirdPerson Revamped";
 
         [JsonPropertyName("UseOnlyAdmin")]
         public bool UseOnlyAdmin { get; set; } = false;
@@ -439,7 +439,7 @@ namespace ThirdPerson
         public string Flag { get; set; } = "@css/slay";
 
         [JsonPropertyName("NoPermission")]
-        public string NoPermission { get; set; } = "yetki yok lavuk.";
+        public string NoPermission { get; set; } = "ou dont have to access this command.";
 
         [JsonPropertyName("UseSmoothCam")]
         public bool UseSmooth { get; set; } = true;
