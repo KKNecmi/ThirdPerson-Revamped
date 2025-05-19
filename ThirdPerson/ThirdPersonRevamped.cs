@@ -439,7 +439,7 @@ namespace ThirdPersonRevamped
         public string Flag { get; set; } = "@css/slay";
 
         [JsonPropertyName("NoPermission")]
-        public string NoPermission { get; set; } = "You dont have to access this command.";
+        public string NoPermission { get; set; } = "You don't have to access this command.";
 
         [JsonPropertyName("UseSmoothCam")]
         public bool UseSmooth { get; set; } = true;
