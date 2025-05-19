@@ -125,10 +125,10 @@ public static class EntityUtilities
             return;
 
         const float desiredDistance = 90f;
-        const float minHeightAbovePlayer = 40f;
-        const float maxHeightAbovePlayer = 120f;
-        const float minDistanceFromPlayer = 75f;
-        const float maxDistanceFromPlayer = 90f;
+        const float minHeightAbovePlayer = 70f;
+        const float maxHeightAbovePlayer = 110f;
+        const float minDistanceFromPlayer = 80f;
+        const float maxDistanceFromPlayer = 80f;
         const float positionStabilization = 0.8f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
@@ -447,8 +447,19 @@ public static class EntityUtilities
         {
             Vector hitVec = trace.Position.ToVector();
             float rawDistance = (hitVec - eyePos).Length();
-            float hitDistance = Math.Clamp(rawDistance - 5f, 55f, desiredDistance);
-            finalPos = eyePos + backwardDir * hitDistance;
+
+            // Eğer kamera duvara çok yakınsa fallback yap
+            if (rawDistance < 25f)
+            {
+                // Geriye çok çekemiyoruz, oyuncunun hemen arkasında kalalım
+                finalPos = eyePos + backwardDir * 25f;
+            }
+            else
+            {
+                // Normal durum: buffer ile geri çek
+                float hitDistance = Math.Clamp(rawDistance - 8f, 50f, desiredDistance);
+                finalPos = eyePos + backwardDir * hitDistance;
+            }
         }
         else
         {
