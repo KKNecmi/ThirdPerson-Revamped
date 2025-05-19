@@ -127,8 +127,8 @@ public static class EntityUtilities
         const float desiredDistance = 90f;
         const float minHeightAbovePlayer = 70f;
         const float maxHeightAbovePlayer = 110f;
-        const float minDistanceFromPlayer = 80f;
-        const float maxDistanceFromPlayer = 80f;
+        const float minDistanceFromPlayer = 78f;
+        const float maxDistanceFromPlayer = 78f;
         const float positionStabilization = 0.8f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
@@ -446,20 +446,32 @@ public static class EntityUtilities
         if (trace.DidHit())
         {
             Vector hitVec = trace.Position.ToVector();
-            float rawDistance = (hitVec - eyePos).Length();
+            float distanceToWall = (hitVec - eyePos).Length();
 
-            // Eğer kamera duvara çok yakınsa fallback yap
-            if (rawDistance < 25f)
+            float clampedDistance;
+
+            // Kamera duvara çok yakınsa zorla minimum
+            if (distanceToWall < 16f)
             {
-                // Geriye çok çekemiyoruz, oyuncunun hemen arkasında kalalım
-                finalPos = eyePos + backwardDir * 25f;
+                clampedDistance = 10f;
+            }
+            // Yakınsa, mesafeyi biraz azalt
+            else if (distanceToWall < desiredDistance)
+            {
+                clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
             }
             else
             {
-                // Normal durum: buffer ile geri çek
-                float hitDistance = Math.Clamp(rawDistance - 8f, 50f, desiredDistance);
-                finalPos = eyePos + backwardDir * hitDistance;
+                clampedDistance = desiredDistance;
             }
+
+            finalPos = eyePos + backwardDir * clampedDistance;
+
+            DebugLogger.Log(
+                "TRACE",
+                $"Hit! WallDist={distanceToWall:F1}, Used={clampedDistance:F1}",
+                player
+            );
         }
         else
         {
