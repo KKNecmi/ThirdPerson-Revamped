@@ -10,13 +10,16 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("ThirdPerson")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Necmi + Original Devs")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute(("Fully fixed and improved version of a third-person camera plugin for Counter-Stri" +
+    "ke 2 using CounterStrikeSharp."))]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("ThirdPerson")]
-[assembly: System.Reflection.AssemblyTitleAttribute("ThirdPerson")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25f81af26967106cedb9bcca09c45b9aff11e713")]
+[assembly: System.Reflection.AssemblyProductAttribute("ThirdPersonRevamped")]
+[assembly: System.Reflection.AssemblyTitleAttribute("ThirdPersonRevamped")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyMetadataAttribute("RepositoryUrl", "https://github.com/YOURNAME/ThirdPerson-Revamped")]
 
 // MSBuild WriteCodeFragment sınıfı tarafından oluşturuldu.
 

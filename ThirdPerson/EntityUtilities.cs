@@ -128,9 +128,8 @@ public static class EntityUtilities
         const float minHeightAbovePlayer = 40f;
         const float maxHeightAbovePlayer = 120f;
         const float minDistanceFromPlayer = 75f;
-        const float maxDistanceFromPlayer = 120f;
+        const float maxDistanceFromPlayer = 105f;
         const float positionStabilization = 0.8f;
-        const float smoothingSpeed = 8f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
         Vector targetPos = player.CalculateSafeCameraPosition(safeDistance, 70f);
@@ -160,25 +159,12 @@ public static class EntityUtilities
         float verticalVelocity = Math.Abs(pawn.AbsVelocity.Z);
         float horizontalSpeed = pawn.AbsVelocity.Length2D();
 
-        float lerpFactor;
-        if (verticalVelocity > 200f || horizontalSpeed > 300f)
-        {
-            lerpFactor = 0.45f; // faster when moving very quickly
-        }
-        else if (horizontalSpeed > 150f)
-        {
-            lerpFactor = 0.25f;
-        }
-        else if (verticalVelocity > 50f)
-        {
-            lerpFactor = 0.12f;
-        }
-        else
-        {
-            lerpFactor = 0.06f;
-        }
+        float maxLerp = 0.45f;
+        float minLerp = 0.06f;
+        float speedT = Math.Clamp(horizontalSpeed / 300f, 0f, 1f);
+        float lerpFactor = minLerp + (maxLerp - minLerp) * speedT;
 
-        float effectiveLerp = Math.Clamp(lerpFactor * positionStabilization, 0.05f, 0.35f);
+        float effectiveLerp = Math.Clamp(lerpFactor * positionStabilization, 0.05f, 0.5f);
 
         // Smooth entire vector including Z
         Vector smoothedPos = currentPos.Lerp(targetPos, effectiveLerp);
@@ -188,7 +174,7 @@ public static class EntityUtilities
             float zDiff = smoothedPos.Z - lastGoodPos.Z;
 
             float zResponse = Math.Clamp(Math.Max(verticalVelocity * 0.1f, 5f), 10f, 80f);
-            float maxAllowedZChange = zResponse * timeSinceLastUpdate;
+            float maxAllowedZChange = Math.Max(zResponse * timeSinceLastUpdate, 0.5f);
 
             if (Math.Abs(zDiff) > maxAllowedZChange)
             {
@@ -216,7 +202,12 @@ public static class EntityUtilities
             Vector direction = toPlayer.Normalized();
             smoothedPos =
                 playerPos
-                - direction * Math.Clamp(currentDistance, minDistanceFromPlayer, desiredDistance);
+                - direction
+                    * Math.Clamp(
+                        currentDistance,
+                        minDistanceFromPlayer,
+                        Math.Min(desiredDistance, maxDistanceFromPlayer)
+                    );
             smoothedPos.Z = Math.Max(smoothedPos.Z, minZ);
         }
 
@@ -371,18 +362,14 @@ public static class EntityUtilities
 
         if (pawn?.AbsOrigin == null)
             return safeDistance;
+
         float yawRadians = pawn.EyeAngles!.Y * (float)Math.PI / 180f;
-
         var backward = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
-
         var allPlayers = Utilities.GetPlayers();
 
         for (float d = checkStep; d <= maxDistance; d += checkStep)
         {
-            if (pawn.AbsOrigin! == null)
-                return safeDistance;
-
-            var checkPos = pawn.AbsOrigin! + backward * d + new Vector(0, 0, verticalOffset - 30f);
+            var checkPos = pawn.AbsOrigin + backward * d + new Vector(0, 0, verticalOffset - 30f);
 
             var nearbyPlayers = allPlayers.Where(p =>
                 p != null

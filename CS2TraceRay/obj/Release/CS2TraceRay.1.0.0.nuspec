@@ -10,7 +10,7 @@
     <readme>README.md</readme>
     <description>A trace ray library developed for use in Counter Strike 2, in conjunction with the CounterStrikeSharp API. This enables the use of trace ray with TraceMask, Contents and skip enums.</description>
     <copyright>schwarper</copyright>
-    <repository type="git" url="https://github.com/schwarper/CS2TraceRay" />
+    <repository type="git" url="https://github.com/schwarper/CS2TraceRay" commit="25f81af26967106cedb9bcca09c45b9aff11e713" />
     <dependencies>
       <group targetFramework="net8.0">
         <dependency id="CounterStrikeSharp.API" version="1.0.316" exclude="Build,Analyzers" />
@@ -18,8 +18,8 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.dll" target="lib\net8.0\CS2TraceRay.dll" />
-    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\BuildOutput\shared\CS2TraceRay\CS2TraceRay.xml" target="lib\net8.0\CS2TraceRay.xml" />
-    <file src="C:\Users\Necmi\Downloads\ThirdPerson-WIP-main\ThirdPerson-WIP-main\README.md" target="README.md" />
+    <file src="C:\Users\Necmi\Desktop\ThirdPerson-Revamped\BuildOutput\shared\CS2TraceRay\CS2TraceRay.dll" target="lib\net8.0\CS2TraceRay.dll" />
+    <file src="C:\Users\Necmi\Desktop\ThirdPerson-Revamped\BuildOutput\shared\CS2TraceRay\CS2TraceRay.xml" target="lib\net8.0\CS2TraceRay.xml" />
+    <file src="C:\Users\Necmi\Desktop\ThirdPerson-Revamped\README.md" target="README.md" />
   </files>
 </package>

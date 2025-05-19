@@ -17,7 +17,7 @@ using System.Reflection;
     "e CounterStrikeSharp API. This enables the use of trace ray with TraceMask, Cont" +
     "ents and skip enums."))]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25f81af26967106cedb9bcca09c45b9aff11e713")]
 [assembly: System.Reflection.AssemblyProductAttribute("CS2TraceRay")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CS2TraceRay")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
