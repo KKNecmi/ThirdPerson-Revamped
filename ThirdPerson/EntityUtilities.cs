@@ -10,7 +10,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using CS2TraceRay.Class;
 using CS2TraceRay.Enum;
 
-namespace ThirdPerson;
+namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {

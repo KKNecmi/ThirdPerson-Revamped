@@ -11,9 +11,9 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using VectorSystem = System.Numerics;
 
-namespace ThirdPerson
+namespace ThirdPersonRevamped
 {
-    public class ThirdPerson : BasePlugin, IPluginConfig<Config>
+    public class ThirdPersonRevamped : BasePlugin, IPluginConfig<Config>
     {
         public static class DebugLogger
         {
