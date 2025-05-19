@@ -18,7 +18,7 @@ A modern, improved third-person camera plugin for Counter-Strike 2.
 
 1. Download or clone this repository.
 2. Place the plugin `.dll` in your `cs2/plugins/` directory.
-3. (Optional) Customize the config file at `cs2/cfg/ThirdPersonRevamped.json`.
+3. (Optional) Customize the config file at `configs/plugins/ThirdPersonRevamped/ThirdPersonRevamped.json`.
 
 ---
 
