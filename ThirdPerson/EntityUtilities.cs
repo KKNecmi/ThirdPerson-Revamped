@@ -185,12 +185,6 @@ public static class EntityUtilities
             {
                 LastFallbackCameraPos[player.SteamID] = smoothedPos;
             }
-
-            DebugLogger.Log(
-                "Z_CHECK",
-                $"Z={smoothedPos.Z:F2} | minZ={minZ:F2} | rawZ={targetPos.Z:F2} | zDiff={zDiff:F2} | verticalVel={verticalVelocity:F2} | maxZChange={maxAllowedZChange:F2}",
-                player
-            );
         }
 
         smoothedPos.Z = Math.Clamp(smoothedPos.Z, minZ, maxZ);
@@ -215,19 +209,6 @@ public static class EntityUtilities
 
         prop.Teleport(smoothedPos, targetAngle, new Vector());
         LastGoodCameraPos[player.SteamID] = smoothedPos;
-
-        DebugLogger.Log(
-            "SMOOTH_CAMERA",
-            "Following player",
-            player,
-            new
-            {
-                smoothedPos,
-                targetAngle,
-                playerPos = pawn.AbsOrigin,
-                distance = (smoothedPos - playerPos).Length(),
-            }
-        );
     }
 
     public static bool IsMoving(this CCSPlayerController player)
@@ -466,12 +447,6 @@ public static class EntityUtilities
             }
 
             finalPos = eyePos + backwardDir * clampedDistance;
-
-            DebugLogger.Log(
-                "TRACE",
-                $"Hit! WallDist={distanceToWall:F1}, Used={clampedDistance:F1}",
-                player
-            );
         }
         else
         {

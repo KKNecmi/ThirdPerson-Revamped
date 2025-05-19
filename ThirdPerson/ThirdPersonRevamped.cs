@@ -266,7 +266,6 @@ namespace ThirdPersonRevamped
 
                 if (_cameraProp == null)
                 {
-                    DebugLogger.Log("ERROR", "Camera prop creation failed", caller);
                     return;
                 }
 
@@ -300,8 +299,6 @@ namespace ThirdPersonRevamped
                                 "CBasePlayerPawn",
                                 "m_pCameraServices"
                             );
-
-                            DebugLogger.Log("SET_VIEWENTITY", "Camera set as ViewEntity", caller);
                         }
                     }
                 );
