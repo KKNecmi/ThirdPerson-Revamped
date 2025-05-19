@@ -1,5 +1,9 @@
 # CS2 - ThirdPerson Revamped
 
+[![GitHub release](https://img.shields.io/github/release/KKNecmi/ThirdPerson-Revamped?include_prereleases=&sort=semver&color=blue)](https://github.com/KKNecmi/ThirdPerson-Revamped/releases/)
+[![License](https://img.shields.io/badge/License-GPLv3-blue)](#license)
+[![issues - ThirdPerson-Revamped](https://img.shields.io/github/issues/KKNecmi/ThirdPerson-Revamped?color=darkgreen)](https://github.com/KKNecmi/ThirdPerson-Revamped/issues)
+
 A modern, improved third-person camera plugin for Counter-Strike 2.  
 🧠 Built for performance, smooth transitions, and flexibility.
 
