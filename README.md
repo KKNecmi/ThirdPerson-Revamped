@@ -11,7 +11,7 @@ A modern, improved third-person camera plugin for Counter-Strike 2.
 - Admin-only access (configurable)
 - Configurable messages and behavior
 
-<p align="center"> <img src="https://github.com/KKNecmi/ThirdPerson-Revamped/blob/main/ThirdPerson/images/ScreenShotThirdPerson.png" alt="ThirdPerson Screenshot" width="300"/> </p>
+<p align="left"> <img src="https://github.com/KKNecmi/ThirdPerson-Revamped/blob/main/ThirdPerson/images/ScreenShotThirdPerson.png" alt="ThirdPerson Screenshot" width="300"/> </p>
 
 ---
 
