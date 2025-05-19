@@ -1,3 +1,9 @@
+/ThirdPerson/bin/
+/ThirdPerson/obj/
+/CS2TraceRay/bin/
+/CS2TraceRay/obj/
 /BuildOutput
 /CS2TraceRay-main
 /publish
+/Debug
+/Release
