@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "OYfar2CdcQU=",
+  "dgSpecHash": "//0ehfeNLXc=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Necmi\\Downloads\\ThirdPerson-WIP-main\\ThirdPerson-WIP-main\\ThirdPerson\\ThirdPerson.csproj",
+  "projectFilePath": "C:\\Users\\Necmi\\Desktop\\ThirdPerson-Revamped\\ThirdPerson\\ThirdPerson.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Necmi\\.nuget\\packages\\counterstrikesharp.api\\1.0.317\\counterstrikesharp.api.1.0.317.nupkg.sha512",
     "C:\\Users\\Necmi\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",

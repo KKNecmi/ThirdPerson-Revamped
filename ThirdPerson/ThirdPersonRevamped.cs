@@ -34,7 +34,7 @@ namespace ThirdPersonRevamped
             }
         }
 
-        public override string ModuleName => "SmurfCatTP";
+        public override string ModuleName => "ThirdPersonRevamped";
         public override string ModuleVersion => "1.0.0-fixed";
         public override string ModuleAuthor => "Necmi (based on BoinK & UgurhanK)";
         public override string ModuleDescription => "Improved Third Person with smooth camera";

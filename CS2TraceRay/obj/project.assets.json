@@ -2561,11 +2561,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Necmi\\Downloads\\ThirdPerson-WIP-main\\ThirdPerson-WIP-main\\CS2TraceRay\\CS2TraceRay.csproj",
+      "projectUniqueName": "C:\\Users\\Necmi\\Desktop\\ThirdPerson-Revamped\\CS2TraceRay\\CS2TraceRay.csproj",
       "projectName": "CS2TraceRay",
-      "projectPath": "C:\\Users\\Necmi\\Downloads\\ThirdPerson-WIP-main\\ThirdPerson-WIP-main\\CS2TraceRay\\CS2TraceRay.csproj",
+      "projectPath": "C:\\Users\\Necmi\\Desktop\\ThirdPerson-Revamped\\CS2TraceRay\\CS2TraceRay.csproj",
       "packagesPath": "C:\\Users\\Necmi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Necmi\\Downloads\\ThirdPerson-WIP-main\\ThirdPerson-WIP-main\\CS2TraceRay\\obj\\",
+      "outputPath": "C:\\Users\\Necmi\\Desktop\\ThirdPerson-Revamped\\CS2TraceRay\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

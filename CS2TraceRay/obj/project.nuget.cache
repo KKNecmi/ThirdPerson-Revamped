@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "a8FI1fMBp9w=",
+  "dgSpecHash": "SeUv55o5qIk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Necmi\\Downloads\\ThirdPerson-WIP-main\\ThirdPerson-WIP-main\\CS2TraceRay\\CS2TraceRay.csproj",
+  "projectFilePath": "C:\\Users\\Necmi\\Desktop\\ThirdPerson-Revamped\\CS2TraceRay\\CS2TraceRay.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Necmi\\.nuget\\packages\\counterstrikesharp.api\\1.0.316\\counterstrikesharp.api.1.0.316.nupkg.sha512",
     "C:\\Users\\Necmi\\.nuget\\packages\\mcmaster.netcore.plugins\\1.4.0\\mcmaster.netcore.plugins.1.4.0.nupkg.sha512",
