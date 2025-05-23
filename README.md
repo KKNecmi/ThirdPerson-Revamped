@@ -24,7 +24,8 @@ A modern, improved third-person camera plugin for Counter-Strike 2.
 
 1. Download or clone this repository.
 2. Place the plugin `.dll` in your `counterstrikesharp/plugins/` directory.
-3. (Optional) Customize the config file at `configs/plugins/ThirdPersonRevamped/ThirdPersonRevamped.json`.
+3. Edit The GameData File in your `counterstrikesharp/gamedata/gamedata.json` Add Section in [CS2TRACERAY](https://raw.githubusercontent.com/KKNecmi/ThirdPerson-Revamped/refs/heads/main/CS2TraceRay/CS2TraceRay.gamedata.json)
+4. (Optional) Customize the config file at `configs/plugins/ThirdPersonRevamped/ThirdPersonRevamped.json`.
 
 ---
 
