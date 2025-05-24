@@ -37,7 +37,7 @@ Please refer to the license terms of the original project.
 2. Place the plugin `.dll` in your `counterstrikesharp/plugins/` directory.
 3. Open your `counterstrikesharp/gamedata/gamedata.json` file.
 4. Add the following section from the included `CS2TraceRay.gamedata.json` file:
-   [CS2TRACERAY](https://raw.githubusercontent.com/KKNecmi/ThirdPerson-Revamped/refs/heads/main/CS2TraceRay/CS2TraceRay.gamedata.json)
+   [TRACERAYGAMEDATA](https://raw.githubusercontent.com/KKNecmi/ThirdPerson-Revamped/refs/heads/main/CS2TraceRay/CS2TraceRay.gamedata.json)
 5. (Optional) Customize the config file at `configs/plugins/ThirdPersonRevamped/ThirdPersonRevamped.json`.
 
 ---
