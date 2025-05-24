@@ -8,11 +8,11 @@
     <RootNamespace>ThirdPersonRevamped</RootNamespace>
     <Title>ThirdPerson Revamped</Title>
     <Description>Fully fixed and improved version of a third-person camera plugin for Counter-Strike 2 using CounterStrikeSharp.</Description>
-    <Authors>Necmi + Original Devs</Authors>
-    <RepositoryUrl>https://github.com/YOURNAME/ThirdPerson-Revamped</RepositoryUrl>
+    <Authors>Necmi</Authors>
+    <RepositoryUrl>https://github.com/KKNecmi/ThirdPerson-Revamped</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.317" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.318" />
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="MySqlConnector" Version="2.3.6" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />

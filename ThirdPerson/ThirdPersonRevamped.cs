@@ -66,17 +66,6 @@ namespace ThirdPersonRevamped
 
             AddCommand("css_tp", "Allows to use thirdperson", OnTPCommand);
             AddCommand("css_thirdperson", "Allows to use thirdperson", OnTPCommand);
-            AddCommand(
-                "test",
-                "For debug",
-                (caller, info) =>
-                {
-                    if (caller == null || caller.SteamID != 76561199496608845)
-                        return;
-
-                    caller.PrintToChat("çalışıyor kral");
-                }
-            );
         }
 
         public void OnGameFrame()
