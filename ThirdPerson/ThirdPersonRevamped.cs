@@ -16,7 +16,7 @@ namespace ThirdPersonRevamped
     public class ThirdPersonRevamped : BasePlugin, IPluginConfig<Config>
     {
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.0";
+        public override string ModuleVersion => "1.0.2";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
