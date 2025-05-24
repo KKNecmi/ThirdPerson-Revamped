@@ -15,25 +15,6 @@ namespace ThirdPersonRevamped
 {
     public class ThirdPersonRevamped : BasePlugin, IPluginConfig<Config>
     {
-        public static class DebugLogger
-        {
-            public static void Log(
-                string tag,
-                string message,
-                CCSPlayerController? player = null,
-                object? data = null
-            )
-            {
-                string steamId = player != null ? player.SteamID.ToString() : "Unknown";
-                string fullMessage =
-                    $"[{DateTime.Now:HH:mm:ss}] [{tag}] [Player: {steamId}] {message}";
-                if (data != null)
-                    fullMessage += $" | Data: {data}";
-
-                Console.WriteLine(fullMessage);
-            }
-        }
-
         public override string ModuleName => "ThirdPersonRevamped";
         public override string ModuleVersion => "1.0.0";
         public override string ModuleAuthor => "Necmi";
@@ -104,10 +85,8 @@ namespace ThirdPersonRevamped
 
         private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
         {
-            //Victim
             var victim = @event.Userid;
 
-            //Attacker
             var attacker = @event.Attacker;
 
             if (attacker == null || victim == null)
@@ -262,18 +241,15 @@ namespace ThirdPersonRevamped
                 _cameraProp.DispatchSpawn();
                 _cameraProp.SetColor(Color.FromArgb(0, 255, 255, 255));
 
-                // Physics ayarları
                 _cameraProp.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NEVER;
                 _cameraProp.Collision.SolidFlags = 12;
                 _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
-                // İlk konumlandırma
                 var initialPosition = caller.CalculatePositionInFront(-110, 90);
                 var viewAngle = caller.PlayerPawn.Value.V_angle;
 
                 _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
 
-                // ViewEntity ayarı, zamanlamayla birlikte
                 AddTimer(
                     0.1f,
                     () =>
@@ -292,11 +268,9 @@ namespace ThirdPersonRevamped
                     }
                 );
 
-                // Pool'a ekle
                 smoothThirdPersonPool.Add(caller, _cameraProp);
                 caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
 
-                // Silahları bırak (isteğe bağlı)
                 if (Config.StripOnUse)
                 {
                     caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = true;
@@ -324,7 +298,6 @@ namespace ThirdPersonRevamped
             }
             else
             {
-                // Geri dönüş
                 caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = uint.MaxValue;
                 AddTimer(
                     0.3f,

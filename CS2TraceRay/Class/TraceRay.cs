@@ -104,7 +104,7 @@ public static unsafe partial class TraceRay
         if (pawn is null || pawn.AbsOrigin is null)
             return new CGameTrace();
 
-        var start = pawn.AbsOrigin + new Vector(0, 0, 64); // 64 is roughly eye height
+        var start = pawn.AbsOrigin + new Vector(0, 0, 64);
         return TraceShape(start, destination, mask, 0ul, pawn.Handle);
     }
 }
