@@ -89,19 +89,37 @@ public static class EntityUtilities
         }
     }
 
-    public static void UpdateCamera(this CDynamicProp _cameraProp, CCSPlayerController target)
+    public static void UpdateCameraPositionRaw(
+        CCSPlayerController player,
+        CPhysicsPropMultiplayer camera
+    )
     {
-        if (target.IsNullOrInvalid() || !_cameraProp.IsValid)
+        var pawn = player.PlayerPawn?.Value;
+        if (pawn == null || pawn.AbsOrigin == null)
             return;
 
-        float safeDistance = target.CalculateCollisionSafeDistance(110f, 10f, 90f);
-        var pawn = target.PlayerPawn!.Value!;
+        float desiredDistance = 100.0f;
+        float verticalOffset = 70.0f;
 
-        _cameraProp.Teleport(
-            target.CalculateSafeCameraPosition(safeDistance, 90),
-            pawn.V_angle,
-            new Vector()
-        );
+        Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
+        QAngle targetAngle = pawn.EyeAngles;
+
+        camera.Teleport(targetPos, targetAngle, new Vector());
+    }
+
+    public static void UpdateCamera(this CDynamicProp _cameraProp, CCSPlayerController player)
+    {
+        if (player.IsNullOrInvalid() || !_cameraProp.IsValid)
+            return;
+
+        var pawn = player.PlayerPawn!.Value!;
+        float safeDistance = player.CalculateCollisionSafeDistance(90f, 10f, 60f);
+
+        Vector cameraPos = player.CalculateSafeCameraPosition(safeDistance, 90);
+
+        QAngle cameraAngle = player.PlayerPawn.Value.EyeAngles;
+
+        _cameraProp.Teleport(cameraPos, cameraAngle, new Vector());
     }
 
     private static readonly Dictionary<ulong, float> LastCameraDistances = new();
@@ -116,6 +134,20 @@ public static class EntityUtilities
         if (player.IsNullOrInvalid() || !prop.IsValid)
             return;
 
+        var pawn = player.PlayerPawn?.Value;
+        if (IsMirrorEnabled(player))
+        {
+            if (pawn == null || pawn.AbsOrigin == null)
+                return;
+
+            var fixedPos = player.CalculateSafeCameraPosition(75f, 40f);
+            var fixedAngle = GetMirrorAngle(player);
+
+            prop.Teleport(fixedPos, fixedAngle, new Vector());
+            LastGoodCameraPos[player.SteamID] = fixedPos;
+            return;
+        }
+
         const float desiredDistance = 90f;
         const float minHeightAbovePlayer = 70f;
         const float maxHeightAbovePlayer = 110f;
@@ -126,7 +158,6 @@ public static class EntityUtilities
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
         Vector targetPos = player.CalculateSafeCameraPosition(safeDistance, 70f);
 
-        var pawn = player.PlayerPawn?.Value;
         if (pawn == null || pawn.AbsOrigin == null)
             return;
 
@@ -159,6 +190,13 @@ public static class EntityUtilities
         float effectiveLerp = Math.Clamp(lerpFactor * positionStabilization, 0.05f, 0.5f);
 
         Vector smoothedPos = currentPos.Lerp(targetPos, effectiveLerp);
+
+        if (IsMirrorEnabled(player))
+        {
+            // Skip updating LastGoodCameraPos in Mirror Mode to prevent jitter.
+            prop.Teleport(smoothedPos, pawn.V_angle, new Vector());
+            return;
+        }
 
         if (LastGoodCameraPos.TryGetValue(player.SteamID, out var lastGoodPos))
         {
@@ -197,9 +235,13 @@ public static class EntityUtilities
         }
 
         QAngle targetAngle = pawn.V_angle;
-
         prop.Teleport(smoothedPos, targetAngle, new Vector());
         LastGoodCameraPos[player.SteamID] = smoothedPos;
+
+        if (!IsMirrorEnabled(player))
+        {
+            LastGoodCameraPos[player.SteamID] = smoothedPos;
+        }
     }
 
     public static bool IsMoving(this CCSPlayerController player)
@@ -376,7 +418,7 @@ public static class EntityUtilities
 
         var targetCamPos = eyePos + backwardDir * desiredDistance;
 
-        float minAllowedZ = pawnPos.Z + 20f;
+        float minAllowedZ = pawnPos.Z;
         var groundTrace = TraceRay.TraceShape(
             targetCamPos + new Vector(0, 0, 50),
             targetCamPos + new Vector(0, 0, -200),
@@ -522,5 +564,18 @@ public static class EntityUtilities
     public static bool IsNullOrInvalid(this CCSPlayerController? player)
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
+    }
+
+    public static bool IsMirrorEnabled(CCSPlayerController player)
+    {
+        return ThirdPersonRevamped.mirrorEnabled.ContainsKey(player)
+            && ThirdPersonRevamped.mirrorEnabled[player];
+    }
+
+    public static QAngle GetMirrorAngle(CCSPlayerController player)
+    {
+        return ThirdPersonRevamped.mirrorAngle.TryGetValue(player, out var angle)
+            ? angle
+            : new QAngle(0, 0, 0);
     }
 }

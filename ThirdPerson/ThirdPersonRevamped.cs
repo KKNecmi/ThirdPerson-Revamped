@@ -8,6 +8,7 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Events;
 using CounterStrikeSharp.API.Modules.Utils;
 using VectorSystem = System.Numerics;
 
@@ -15,8 +16,27 @@ namespace ThirdPersonRevamped
 {
     public class ThirdPersonRevamped : BasePlugin, IPluginConfig<Config>
     {
+        public static class DebugLogger
+        {
+            public static void Log(
+                string tag,
+                string message,
+                CCSPlayerController? player = null,
+                object? data = null
+            )
+            {
+                string steamId = player != null ? player.SteamID.ToString() : "Unknown";
+                string fullMessage =
+                    $"[{DateTime.Now:HH:mm:ss}] [{tag}] [Player: {steamId}] {message}";
+                if (data != null)
+                    fullMessage += $" | Data: {data}";
+
+                Console.WriteLine(fullMessage);
+            }
+        }
+
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.2";
+        public override string ModuleVersion => "1.0.3";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
@@ -29,6 +49,8 @@ namespace ThirdPersonRevamped
             cfg = config;
         }
 
+        public static Dictionary<CCSPlayerController, bool> mirrorEnabled = new();
+        public static Dictionary<CCSPlayerController, QAngle> mirrorAngle = new();
         public static Dictionary<CCSPlayerController, CDynamicProp> thirdPersonPool =
             new Dictionary<CCSPlayerController, CDynamicProp>();
         public static Dictionary<
@@ -39,6 +61,9 @@ namespace ThirdPersonRevamped
         public static Dictionary<CCSPlayerController, WeaponList> weapons =
             new Dictionary<CCSPlayerController, WeaponList>();
 
+        private static Dictionary<CCSPlayerController, float> lastMirrorUpdateTime = new();
+        public static Dictionary<CCSPlayerController, Vector> mirrorPosition = new();
+
         public override void Load(bool hotReload)
         {
             RegisterListener<Listeners.OnTick>(OnGameFrame);
@@ -47,32 +72,59 @@ namespace ThirdPersonRevamped
 
             AddCommand("css_tp", "Allows to use thirdperson", OnTPCommand);
             AddCommand("css_thirdperson", "Allows to use thirdperson", OnTPCommand);
+            AddCommand("css_mirror", "Enable Mirror Mode", OnMirrorCommand);
         }
 
         public void OnGameFrame()
         {
-            foreach (var data in thirdPersonPool)
-            {
-                if (
-                    data.Key == null
-                    || !data.Key.IsValid
-                    || !data.Key.PlayerPawn.IsValid
-                    || data.Key.Connected != PlayerConnectedState.PlayerConnected
-                )
-                    continue;
-                data.Value.UpdateCamera(data.Key);
-            }
-
             foreach (var data in smoothThirdPersonPool)
             {
-                if (
-                    data.Key == null
-                    || !data.Key.IsValid
-                    || !data.Key.PlayerPawn.IsValid
-                    || data.Key.Connected != PlayerConnectedState.PlayerConnected
-                )
+                var player = data.Key;
+                var camera = data.Value;
+
+                if (player.IsNullOrInvalid() || !camera.IsValid)
                     continue;
-                data.Value.UpdateCameraSmooth(data.Key);
+
+                var now = GetTimeSeconds();
+
+                if (mirrorEnabled.TryGetValue(player, out bool isMirror) && isMirror)
+                {
+                    var fixedPos = player.CalculateSafeCameraPosition(75f, 40f);
+                    var fixedAngle = mirrorAngle.ContainsKey(player)
+                        ? mirrorAngle[player]
+                        : player.PlayerPawn.Value.EyeAngles;
+                    camera.Teleport(fixedPos, fixedAngle, new Vector());
+                }
+                else
+                {
+                    camera.UpdateCameraSmooth(player);
+                }
+            }
+
+            foreach (var data in thirdPersonPool)
+            {
+                var player = data.Key;
+                var camera = data.Value;
+
+                if (player.IsNullOrInvalid() || !camera.IsValid)
+                    continue;
+
+                var pawn = player.PlayerPawn.Value;
+
+                if (mirrorEnabled.TryGetValue(player, out bool isMirror) && isMirror)
+                {
+                    var fixedPos = player.CalculateSafeCameraPosition(75f);
+                    var fixedAngle = mirrorAngle.ContainsKey(player)
+                        ? mirrorAngle[player]
+                        : player.PlayerPawn.Value.V_angle;
+                    camera.Teleport(fixedPos, fixedAngle, new Vector());
+                }
+                else
+                {
+                    var cameraPos = player.CalculateSafeCameraPosition(90f, 90f);
+                    var cameraAngle = player.PlayerPawn.Value.V_angle;
+                    camera.Teleport(cameraPos, cameraAngle, new Vector());
+                }
             }
         }
 
@@ -147,9 +199,15 @@ namespace ThirdPersonRevamped
                     new Vector()
                 );
 
-                caller.PlayerPawn!.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
+                caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
                     .EntityHandle
                     .Raw;
+                Utilities.SetStateChanged(
+                    caller.PlayerPawn.Value!,
+                    "CBasePlayerPawn",
+                    "m_pCameraServices"
+                );
+
                 Utilities.SetStateChanged(
                     caller.PlayerPawn!.Value!,
                     "CBasePlayerPawn",
@@ -245,7 +303,7 @@ namespace ThirdPersonRevamped
                 _cameraProp.Collision.SolidFlags = 12;
                 _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
-                var initialPosition = caller.CalculatePositionInFront(-110, 90);
+                var initialPosition = caller.CalculatePositionInFront(-110, 75);
                 var viewAngle = caller.PlayerPawn.Value.V_angle;
 
                 _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
@@ -331,6 +389,51 @@ namespace ThirdPersonRevamped
             }
         }
 
+        public void OnMirrorCommand(CCSPlayerController? caller, CommandInfo? command = null)
+        {
+            if (caller == null || !caller.PawnIsAlive)
+                return;
+
+            if (Config.UseOnlyAdmin && !AdminManager.PlayerHasPermissions(caller, Config.Flag))
+            {
+                command?.ReplyToCommand(ReplaceColorTags(Config.NoPermission));
+                return;
+            }
+
+            if (!thirdPersonPool.ContainsKey(caller) && !smoothThirdPersonPool.ContainsKey(caller))
+            {
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnWarningMirror));
+                return;
+            }
+
+            bool isEnabled = mirrorEnabled.ContainsKey(caller) && mirrorEnabled[caller];
+            mirrorEnabled[caller] = !isEnabled;
+
+            DebugLogger.Log("MIRROR_CMD", $"Mirror toggled: {mirrorEnabled[caller]}", caller);
+
+            if (mirrorEnabled[caller])
+            {
+                mirrorAngle[caller] = caller.PlayerPawn.Value.EyeAngles;
+
+                // 🆕 Store the fixed position ONCE
+                mirrorPosition[caller] = caller.CalculateSafeCameraPosition(70f, 40f);
+
+                lastMirrorUpdateTime[caller] = GetTimeSeconds();
+                DebugLogger.Log("MIRROR_CMD", $"Stored Angle: {mirrorAngle[caller]}", caller);
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivatedMirror));
+            }
+            else
+            {
+                mirrorAngle.Remove(caller);
+                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnDeactivatedMirror));
+            }
+        }
+
+        private static float GetTimeSeconds()
+        {
+            return (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
+        }
+
         public string ReplaceColorTags(string input)
         {
             string[] colorPatterns =
@@ -383,10 +486,20 @@ namespace ThirdPersonRevamped
     public class Config : BasePluginConfig
     {
         [JsonPropertyName("OnActivated")]
-        public string OnActivated { get; set; } = "| ThirdPerson Activated";
+        public string OnActivated { get; set; } = " | {YELLOW}ThirdPerson {GREEN}Activated";
 
         [JsonPropertyName("OnDeactivated")]
-        public string OnDeactivated { get; set; } = "| ThirdPerson Deactivated";
+        public string OnDeactivated { get; set; } = " | {YELLOW}ThirdPerson {RED}Deactivated";
+
+        [JsonPropertyName("OnActivatedMirror")]
+        public string OnActivatedMirror { get; set; } = " | {YELLOW}Mirror Mode {GREEN}Activated";
+
+        [JsonPropertyName("OnDeactivatedMirror")]
+        public string OnDeactivatedMirror { get; set; } = " | {YELLOW}Mirror Mode {RED}Deactivated";
+
+        [JsonPropertyName("OnWarningMirror")]
+        public string OnWarningMirror { get; set; } =
+            " | {YELLOW}Mirror Mode {GRAY}requires ThirdPerson to be active!";
 
         [JsonPropertyName("Prefix")]
         public string Prefix { get; set; } = " [{BLUE}ThirdPerson Revamped";
