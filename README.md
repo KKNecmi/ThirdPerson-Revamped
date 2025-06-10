@@ -17,10 +17,10 @@ Modified version is included in this repository for compatibility.
 
 Please refer to the license terms of the original project.
 
-
 ---
 
 ## ✅ Features
+
 - Toggleable third-person view (`!tp`, `!thirdperson`, or `css_thirdperson`)
 - Smooth camera transitions (optional)
 - Admin-only access (configurable)
@@ -31,6 +31,7 @@ Please refer to the license terms of the original project.
 ---
 
 ## 📥 Installation
+
 > Requires [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
 
 1. Download or clone this repository.
@@ -45,16 +46,21 @@ Please refer to the license terms of the original project.
 ## ⚙️ Configuration
 
 📁 **Default Config File (`ThirdPersonRevamped.json`):**
+
 ```json
 {
-  "OnActivated": "| ThirdPerson Activated",
-  "OnDeactivated": "| ThirdPerson Deactivated",
+  "OnActivated": " | {YELLOW}ThirdPerson {GREEN}Activated",
+  "OnDeactivated": " | {YELLOW}ThirdPerson {RED}Deactivated",
+  "OnActivatedMirror": " | {YELLOW}Mirror Mode {GREEN}Activated",
+  "OnDeactivatedMirror": " | {YELLOW}Mirror Mode {RED}Deactivated",
+  "OnWarningMirror": " | {YELLOW}Mirror Mode {GRAY}requires ThirdPerson to be active!",
   "Prefix": " [{BLUE}ThirdPerson Revamped",
   "UseOnlyAdmin": false,
   "OnlyAdminFlag": "@css/slay",
-  "NoPermission": "You dont have access to this command.",
+  "NoPermission": "You don\u0027t have to access this command.",
   "UseSmoothCam": true,
   "SmoothCamDuration": 0.05,
   "StripOnUse": false,
   "ConfigVersion": 1
 }
+```
