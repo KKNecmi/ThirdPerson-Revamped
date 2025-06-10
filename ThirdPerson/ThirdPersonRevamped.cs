@@ -89,7 +89,10 @@ namespace ThirdPersonRevamped
 
                 if (mirrorEnabled.TryGetValue(player, out bool isMirror) && isMirror)
                 {
-                    var fixedPos = player.CalculateSafeCameraPosition(75f, 40f);
+                    var fixedPos = player.CalculateSafeCameraPosition_StaticZ(
+                        70f,
+                        player.PlayerPawn.Value.AbsOrigin.Z + 75f
+                    );
                     var fixedAngle = mirrorAngle.ContainsKey(player)
                         ? mirrorAngle[player]
                         : player.PlayerPawn.Value.EyeAngles;
@@ -415,10 +418,13 @@ namespace ThirdPersonRevamped
             {
                 mirrorAngle[caller] = caller.PlayerPawn.Value.EyeAngles;
 
-                // 🆕 Store the fixed position ONCE
-                mirrorPosition[caller] = caller.CalculateSafeCameraPosition(70f, 40f);
+                mirrorPosition[caller] = caller.CalculateSafeCameraPosition_StaticZ(
+                    70f,
+                    caller.PlayerPawn.Value.AbsOrigin.Z + 75f
+                );
 
                 lastMirrorUpdateTime[caller] = GetTimeSeconds();
+                DebugLogger.Log("MIRROR_CMD", $"Stored Pos: {mirrorPosition[caller]}", caller);
                 DebugLogger.Log("MIRROR_CMD", $"Stored Angle: {mirrorAngle[caller]}", caller);
                 caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivatedMirror));
             }

@@ -144,7 +144,6 @@ public static class EntityUtilities
             var fixedAngle = GetMirrorAngle(player);
 
             prop.Teleport(fixedPos, fixedAngle, new Vector());
-            LastGoodCameraPos[player.SteamID] = fixedPos;
             return;
         }
 
@@ -193,7 +192,6 @@ public static class EntityUtilities
 
         if (IsMirrorEnabled(player))
         {
-            // Skip updating LastGoodCameraPos in Mirror Mode to prevent jitter.
             prop.Teleport(smoothedPos, pawn.V_angle, new Vector());
             return;
         }
@@ -506,6 +504,24 @@ public static class EntityUtilities
 
         LastGoodCameraPos[player.SteamID] = finalPos;
         return finalPos;
+    }
+
+    public static Vector CalculateSafeCameraPosition_StaticZ(
+        this CCSPlayerController player,
+        float desiredDistance,
+        float fixedZ
+    )
+    {
+        var pawn = player.PlayerPawn?.Value;
+        if (pawn == null || pawn.AbsOrigin == null || pawn.EyeAngles == null)
+            return new Vector(0, 0, 0);
+
+        float yawRadians = pawn.EyeAngles.Y * (float)Math.PI / 180f;
+        var backwardDir = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
+        var eyePos = new Vector(pawn.AbsOrigin.X, pawn.AbsOrigin.Y, fixedZ);
+        var targetCamPos = eyePos + backwardDir * desiredDistance;
+
+        return targetCamPos;
     }
 
     public static Vector Lerp(this Vector from, Vector to, float t)
