@@ -1,0 +1,217 @@
+[33mcommit 58c659360d7801d8696f4829ee065ff35d97e49f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Tue Jun 10 06:33:55 2025 +0300
+
+    Smooth Camera Height Bug Fix
+
+[33mcommit f33f61a318de9a1e468e83b2f4ad984599060fc0[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Tue Jun 10 05:54:30 2025 +0300
+
+    Readme Updated
+
+[33mcommit d49e7ed0cb8bc0e44e6fbf6945277f7604f128ca[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 31 07:41:18 2025 +0300
+
+    Mirror Test Added & Rotation bug + z axis bug
+
+[33mcommit 11b4bbb6d28e63bfb1c9d7cf4f9b6e2a915d35ae[m[33m ([m[1;33mtag: [m[1;33mv1.0.2[m[33m)[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 22:16:12 2025 +0300
+
+    Plugin Version Fixed
+
+[33mcommit a31afaf2176a6b2d958abf990cb7fff4e8c87ef1[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 22:10:52 2025 +0300
+
+    Fixed Accidental Deleted Code
+
+[33mcommit 5b5c3d8c4026c5afbb789bf79e38e80c6d6a0c68[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 22:07:08 2025 +0300
+
+    Removed DebugLogger & Extra Comment
+
+[33mcommit 7576449cc275a2c9a3df04c749d87f062bcf179b[m[33m ([m[1;33mtag: [m[1;33mv1.0.1[m[33m)[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 21:01:52 2025 +0300
+
+    Removed Test Comnands
+
+[33mcommit 0eec8516d0d10402f4a4070b04313b48ee9e3499[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 18:24:37 2025 +0300
+
+    Readme Updated
+
+[33mcommit 59db0f7c6fe03fc1253a9a76a83115ed2a41123d[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Sat May 24 18:23:32 2025 +0300
+
+    Updated Readme
+
+[33mcommit 14e45b02d7a681060f8010624c2de94cfd26b0ed[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Fri May 23 07:46:59 2025 +0300
+
+    Readme Updated
+
+[33mcommit e7d9fbf5f44c0420da8ddf63e760bf34cd66449b[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 22:51:35 2025 +0300
+
+    Update README.md
+
+[33mcommit fad0bef9f071a94f688808a0f638c2d27a333ca7[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 22:45:37 2025 +0300
+
+    Update README.md
+
+[33mcommit 20b69aa939b419c067f796065945871fbe127eb7[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 21:54:29 2025 +0300
+
+    Update README.md
+
+[33mcommit 919b95ae1aa6aacea67a4151deefe6c181f517dc[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 21:53:57 2025 +0300
+
+    Update README.md
+
+[33mcommit ee259d02fbfe6de44ea22985368931fb7beba109[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 21:53:17 2025 +0300
+
+    Update README.md
+
+[33mcommit 1ab98c659e6c642e66835bbc56a0c300f95d7522[m[33m ([m[1;33mtag: [m[1;33mv1.0.0[m[33m, [m[1;31morigin/archive[m[33m)[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 19:09:06 2025 +0300
+
+    Version Fixed
+
+[33mcommit 8919616aa15707bcd1883ddb0577683459a6dd13[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 18:56:04 2025 +0300
+
+    DebugLog Removed
+
+[33mcommit 1b5ef2c1b31f86f8af636c3ccecd470f9ba2afa6[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 18:52:05 2025 +0300
+
+    Update README.md
+
+[33mcommit e660519217b56b4c97e6345b127d2848516cb2cb[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 18:50:55 2025 +0300
+
+    Updated Readme & Config Setup
+
+[33mcommit c0ebff04d9483d58a20f7e29110ba2a48225f9bd[m
+Author: Necmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 18:47:53 2025 +0300
+
+    Update README.md
+
+[33mcommit 11fe599d6197647f8efbc24a9fcd9ad5acb7c3e0[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 18:47:17 2025 +0300
+
+    WallClip Fixed & ScreenShot Added
+
+[33mcommit 317cce64ea8d0425eb0e094ffc9d7a39afa8154b[m
+Merge: fb75cf6 19b11d3
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 17:27:55 2025 +0300
+
+    Merge branch 'main' of https://github.com/KKNecmi/ThirdPerson-WIP-main
+
+[33mcommit fb75cf69e8d36d8af331ebf7edc09761167a72ec[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 17:27:49 2025 +0300
+
+    Distance & Height Float Changed
+
+[33mcommit 19b11d359f755b9669255465110d725959823770[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 16:10:08 2025 +0300
+
+    Update README.md
+
+[33mcommit b86e6db2e58157a778910b0599e6cc0ca4c5b5ad[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 04:18:11 2025 +0300
+
+    Config Updated
+
+[33mcommit 75d55e7c9a4166642bce2b7e5b048f0f1fdef14c[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 04:07:32 2025 +0300
+
+    gitignore Updated ( Bin & Obj )
+
+[33mcommit 4cb09639072022259d1ea3653631022072adca15[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 04:01:18 2025 +0300
+
+    gitignore Updtaed
+
+[33mcommit e3967472047686ee943070726ee34a578cb4860d[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:52:18 2025 +0300
+
+    Flicker Fixed
+
+[33mcommit 25f81af26967106cedb9bcca09c45b9aff11e713[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:36:52 2025 +0300
+
+    Renamed ModuleName
+
+[33mcommit d4ed9fcf83470d2a4f3edc16612c741d70b8496a[m
+Merge: 770f1a7 3dec5da
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:33:37 2025 +0300
+
+    Merge branch 'main' of https://github.com/KKNecmi/ThirdPerson-WIP-main
+
+[33mcommit 770f1a7fb4dffa9c88d4806505068f2ce4493035[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:33:31 2025 +0300
+
+    Renamed ThirdPerson to ThirdPersonRevamped
+
+[33mcommit af9b9f39fa63fdc9c1a531c4c2e4c4fc5e7a3f56[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:24:19 2025 +0300
+
+    Config Changed
+
+[33mcommit 3dec5da5d204c4f14664b0542290afb0d87af7ed[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:20:38 2025 +0300
+
+    Update README.md
+
+[33mcommit 9871bd6834c14bce36fdfd93b1b201d42dad3c40[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:19:41 2025 +0300
+
+    Update README.md
+
+[33mcommit 7d586fddce31116f0414f1a3d58d6f8df39f2941[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:19:17 2025 +0300
+
+    Update README.md
+
+[33mcommit 45a464124f21fea4903e9075290cd338e5332b7b[m
+Author: KKNecmi <oyunoyunpro343434@gmail.com>
+Date:   Mon May 19 03:17:48 2025 +0300
+
+    first commit

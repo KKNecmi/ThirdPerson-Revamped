@@ -89,10 +89,12 @@ namespace ThirdPersonRevamped
 
                 if (mirrorEnabled.TryGetValue(player, out bool isMirror) && isMirror)
                 {
-                    var fixedPos = player.CalculateSafeCameraPosition_StaticZ(
-                        70f,
-                        player.PlayerPawn.Value.AbsOrigin.Z + 75f
-                    );
+                    var fixedPos = mirrorPosition.ContainsKey(player)
+                        ? mirrorPosition[player]
+                        : player.CalculateSafeCameraPosition_StaticZ(
+                            70f,
+                            player.PlayerPawn.Value.AbsOrigin.Z + 75f
+                        );
                     var fixedAngle = mirrorAngle.ContainsKey(player)
                         ? mirrorAngle[player]
                         : player.PlayerPawn.Value.EyeAngles;
