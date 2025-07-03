@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/KKNecmi/ThirdPerson-Revamped</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.318" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.319" />
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="MySqlConnector" Version="2.3.6" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
