@@ -507,7 +507,7 @@ namespace ThirdPersonRevamped
 
         [JsonPropertyName("OnWarningMirror")]
         public string OnWarningMirror { get; set; } =
-            " | {YELLOW}Mirror Mode {GRAY}requires ThirdPerson to be active!";
+            " | {YELLOW}Mirror Mode {GREY}requires ThirdPerson to be active!";
 
         [JsonPropertyName("Prefix")]
         public string Prefix { get; set; } = " [{BLUE}ThirdPerson Revamped";
