@@ -34,8 +34,8 @@ Please refer to the license terms of the original project.
 
 > Requires [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp)
 
-1. Download or clone this repository.
-2. Place the plugin `.dll` in your `counterstrikesharp/plugins/` directory.
+1. [Download DLL from Releases](https://github.com/KKNecmi/ThirdPerson-Revamped/releases/latest)
+2. Place the plugin `.dll` in your `counterstrikesharp/plugins/ThirdPersonRevamped` directory.
 3. Open your `counterstrikesharp/gamedata/gamedata.json` file.
 4. Add the following section from the included `CS2TraceRay.gamedata.json` file:
    [TRACERAYGAMEDATA](https://raw.githubusercontent.com/KKNecmi/ThirdPerson-Revamped/refs/heads/main/CS2TraceRay/CS2TraceRay.gamedata.json)
