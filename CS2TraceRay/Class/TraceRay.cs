@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
+using CS2TraceRay.Struct;
 
 namespace CS2TraceRay.Class;
 
@@ -11,16 +12,20 @@ namespace CS2TraceRay.Class;
 /// </summary>
 public static unsafe partial class TraceRay
 {
-    private static readonly IntPtr TraceFunc = NativeAPI.FindSignature(
-        Addresses.ServerPath,
-        GameData.GetSignature("TraceFunc")
-    );
-    private static readonly IntPtr GameTraceManager = NativeAPI.FindSignature(
-        Addresses.ServerPath,
-        GameData.GetSignature("GameTraceManager")
-    );
-    private static readonly TraceShapeDelegate _traceShape =
-        Marshal.GetDelegateForFunctionPointer<TraceShapeDelegate>(TraceFunc);
+    private static readonly IntPtr CTraceFilterVtable;
+    private static readonly IntPtr GameTraceManager;
+    private static readonly TraceShapeDelegate _traceShape;
+    private static readonly TraceShapeRayFilterDelegate _traceShapeRayFilter;
+
+    static TraceRay()
+    {
+        IntPtr traceFunc = NativeAPI.FindSignature(Addresses.ServerPath, GameData.GetSignature("TraceFunc"));
+        IntPtr traceShape = NativeAPI.FindSignature(Addresses.ServerPath, GameData.GetSignature("TraceShape"));
+        CTraceFilterVtable = NativeAPI.FindSignature(Addresses.ServerPath, GameData.GetSignature("CTraceFilterVtable"));
+        GameTraceManager = NativeAPI.FindSignature(Addresses.ServerPath, GameData.GetSignature("GameTraceManager"));
+        _traceShape = Marshal.GetDelegateForFunctionPointer<TraceShapeDelegate>(traceFunc);
+        _traceShapeRayFilter = Marshal.GetDelegateForFunctionPointer<TraceShapeRayFilterDelegate>(traceShape);
+    }
 
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate bool TraceShapeDelegate(
@@ -33,6 +38,16 @@ public static unsafe partial class TraceRay
         CGameTrace* pGameTrace
     );
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate bool TraceShapeRayFilterDelegate(
+        IntPtr GameTraceManager,
+        Ray* trace,
+        IntPtr vecStart,
+        IntPtr vecEnd,
+        CTraceFilter* traceFilter,
+        CGameTrace* pGameTrace
+    );
+
     /// <summary>
     /// Performs a trace from origin in the direction of angle with specified mask and content flags
     /// </summary>
@@ -42,21 +57,11 @@ public static unsafe partial class TraceRay
     /// <param name="content">Content flags as ulong</param>
     /// <param name="skip">Entity to skip (IntPtr handle)</param>
     /// <returns>CGameTrace containing the trace results</returns>
-    public static CGameTrace TraceShape(
-        Vector origin,
-        QAngle angle,
-        ulong mask,
-        ulong content,
-        IntPtr skip
-    )
+    public static CGameTrace TraceShape(Vector origin, QAngle angle, ulong mask, ulong content, IntPtr skip)
     {
         Vector _forward = new();
         NativeAPI.AngleVectors(angle.Handle, _forward.Handle, 0, 0);
-        Vector _endOrigin = new(
-            origin.X + _forward.X * 8192,
-            origin.Y + _forward.Y * 8192,
-            origin.Z + _forward.Z * 8192
-        );
+        Vector _endOrigin = new(origin.X + _forward.X * 8192, origin.Y + _forward.Y * 8192, origin.Z + _forward.Z * 8192);
 
         return TraceShape(origin, _endOrigin, mask, content, skip);
     }
@@ -64,57 +69,46 @@ public static unsafe partial class TraceRay
     /// <summary>
     /// Performs a trace from origin to end with specified mask and content flags
     /// </summary>
-    /// <param name="origin">Starting position of the trace</param>
+    /// <param name="start">Starting position of the trace</param>
     /// <param name="end">Ending position of the trace</param>
     /// <param name="mask">Trace mask flags as ulong</param>
     /// <param name="content">Content flags as ulong</param>
     /// <param name="skip">Entity to skip (IntPtr handle)</param>
     /// <returns>CGameTrace containing the trace results</returns>
-    public static CGameTrace TraceShape(
-        Vector origin,
-        Vector end,
-        ulong mask,
-        ulong content,
-        IntPtr skip
-    )
+    public static CGameTrace TraceShape(Vector start, Vector end, ulong mask, ulong content, IntPtr skip)
     {
         CGameTrace* _trace = stackalloc CGameTrace[1];
         IntPtr _gameTraceManagerAddress = Address.GetAbsoluteAddress(GameTraceManager, 3, 7);
 
-        _traceShape(
-            *(IntPtr*)_gameTraceManagerAddress,
-            origin.Handle,
-            end.Handle,
-            skip,
-            mask,
-            content,
-            _trace
-        );
+        _traceShape(*(IntPtr*)_gameTraceManagerAddress, start.Handle, end.Handle, skip, mask, content, _trace);
 
         return *_trace;
     }
 
     /// <summary>
-    /// Performs a line trace (raycast) from the player's eye position to a specified destination, using the given trace mask.
+    /// Performs a hull-based ray trace using the provided shape, direction, and filter information.
+    /// This method wraps the native _traceShapeRayFilter call, setting up the necessary filter and trace data on the stack.
     /// </summary>
-    /// <param name="player">The player controller whose eye position is used as the trace start point.</param>
-    /// <param name="destination">The world-space destination position to trace towards.</param>
-    /// <param name="mask">Trace mask flags as a ulong, specifying which types of surfaces or entities to consider during the trace.</param>
+    /// <param name="start">Starting position of the trace</param>
+    /// <param name="end">Starting position of the trace</param>
+    /// <param name="filter"> The filter used to determine which entities or collisions should be excluded during the trace./// </param>
+    /// <param name="ray">A pointer to the shape of the ray (e.g., line, sphere, hull, capsule, mesh) to be traced.</param>
     /// <returns>
-    /// Returns a <see cref="CGameTrace"/> structure containing the result of the trace operation, including hit information such as the entity hit, surface details, and impact position.
-    /// If the player's pawn or its origin is unavailable, returns a default (empty) <see cref="CGameTrace"/>.
+    /// Returns a <see cref="CGameTrace"/> structure containing the result of the trace operation, including hit data, entity, and surface details.
     /// </returns>
-    public static CGameTrace GetGameTraceByEyePosition(
-        CCSPlayerController player,
-        Vector destination,
-        ulong mask
-    )
+    public static CGameTrace TraceHull(Vector start, Vector end, CTraceFilter filter, Ray ray)
     {
-        var pawn = player.PlayerPawn?.Value;
-        if (pawn is null || pawn.AbsOrigin is null)
-            return new CGameTrace();
+        CGameTrace* _trace = stackalloc CGameTrace[1];
+        CTraceFilter* _filter = stackalloc CTraceFilter[1];
+        
+        IntPtr _vtable = Address.GetAbsoluteAddress(CTraceFilterVtable, 3, 7);
+        IntPtr _gameTraceManager = Address.GetAbsoluteAddress(GameTraceManager, 3, 7);
 
-        var start = pawn.AbsOrigin + new Vector(0, 0, 64);
-        return TraceShape(start, destination, mask, 0ul, pawn.Handle);
+        *_filter = filter;
+        _filter->Vtable = (void*)_vtable;
+
+        _traceShapeRayFilter(*(nint*)_gameTraceManager, &ray, start.Handle, end.Handle, _filter, _trace);
+
+        return *_trace;
     }
 }

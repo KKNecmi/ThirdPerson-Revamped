@@ -18,5 +18,5 @@ public enum DesignerNameMatchType
     /// <summary>
     /// Matches if the designer name ends with the specified string.
     /// </summary>
-    EndsWith,
+    EndsWith
 }

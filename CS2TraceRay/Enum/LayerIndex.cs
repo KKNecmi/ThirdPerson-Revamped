@@ -24,5 +24,5 @@ public enum LayerIndex
     NotFound = -1,
 
     /// <summary>Maximum allowed layer index</summary>
-    MaxAllowed = 64,
+    MaxAllowed = 64
 }

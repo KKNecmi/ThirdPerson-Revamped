@@ -30,5 +30,5 @@ public enum CsgoLayerIndex
     UnusedLayer,
 
     /// <summary>Thrown grenade entities layer</summary>
-    ThrownGrenade,
+    ThrownGrenade
 }
