@@ -45,16 +45,28 @@ public static class GameTraceExtensions
     /// <param name="designerName">The designer name pattern to match.</param>
     /// <param name="matchType">The type of matching to perform.</param>
     /// <returns>True if an entity of type <typeparamref name="T"/> matching the pattern was hit, false otherwise.</returns>
-    public static bool HitEntityByDesignerName<T>(this CGameTrace gametrace, out T? entity, string designerName, DesignerNameMatchType matchType = DesignerNameMatchType.Equals) where T : CEntityInstance
+    public static bool HitEntityByDesignerName<T>(
+        this CGameTrace gametrace,
+        out T? entity,
+        string designerName,
+        DesignerNameMatchType matchType = DesignerNameMatchType.Equals
+    )
+        where T : CEntityInstance
     {
         if ((T?)Activator.CreateInstance(typeof(T), gametrace.HitEntity) is { } entityInstance)
         {
             bool isMatch = matchType switch
             {
                 DesignerNameMatchType.Equals => entityInstance.DesignerName == designerName,
-                DesignerNameMatchType.StartsWith => entityInstance.DesignerName.StartsWith(designerName, StringComparison.OrdinalIgnoreCase),
-                DesignerNameMatchType.EndsWith => entityInstance.DesignerName.EndsWith(designerName, StringComparison.OrdinalIgnoreCase),
-                _ => false
+                DesignerNameMatchType.StartsWith => entityInstance.DesignerName.StartsWith(
+                    designerName,
+                    StringComparison.OrdinalIgnoreCase
+                ),
+                DesignerNameMatchType.EndsWith => entityInstance.DesignerName.EndsWith(
+                    designerName,
+                    StringComparison.OrdinalIgnoreCase
+                ),
+                _ => false,
             };
 
             if (isMatch)
@@ -76,7 +88,13 @@ public static class GameTraceExtensions
     /// <returns>True if a player was hit, false otherwise.</returns>
     public static bool HitPlayer(this CGameTrace gametrace, out CCSPlayerController? player)
     {
-        if (gametrace.HitEntityByDesignerName(out CCSPlayerPawn? playerPawn, "player", DesignerNameMatchType.Equals))
+        if (
+            gametrace.HitEntityByDesignerName(
+                out CCSPlayerPawn? playerPawn,
+                "player",
+                DesignerNameMatchType.Equals
+            )
+        )
         {
             player = playerPawn?.OriginalController.Value;
             return player != null;
@@ -94,7 +112,11 @@ public static class GameTraceExtensions
     /// <returns>True if a weapon was hit, false otherwise.</returns>
     public static bool HitWeapon(this CGameTrace gametrace, out CBasePlayerWeapon? weapon)
     {
-        return gametrace.HitEntityByDesignerName(out weapon, "weapon_", DesignerNameMatchType.StartsWith);
+        return gametrace.HitEntityByDesignerName(
+            out weapon,
+            "weapon_",
+            DesignerNameMatchType.StartsWith
+        );
     }
 
     /// <summary>
@@ -105,7 +127,11 @@ public static class GameTraceExtensions
     /// <returns>True if a chicken was hit, false otherwise.</returns>
     public static bool HitChicken(this CGameTrace gametrace, out CChicken? chicken)
     {
-        return gametrace.HitEntityByDesignerName(out chicken, "chicken", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out chicken,
+            "chicken",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -116,7 +142,11 @@ public static class GameTraceExtensions
     /// <returns>True if a button was hit, false otherwise.</returns>
     public static bool HitButton(this CGameTrace gametrace, out CBaseButton? button)
     {
-        return gametrace.HitEntityByDesignerName(out button, "func_door", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out button,
+            "func_door",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -127,7 +157,11 @@ public static class GameTraceExtensions
     /// <returns>True if a buyzone was hit, false otherwise.</returns>
     public static bool HitBuyzone(this CGameTrace gametrace, out CBuyZone? buyzone)
     {
-        return gametrace.HitEntityByDesignerName(out buyzone, "func_buyzone", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out buyzone,
+            "func_buyzone",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -149,7 +183,11 @@ public static class GameTraceExtensions
     /// <returns>True if a door was hit, false otherwise.</returns>
     public static bool HitDoor(this CGameTrace gametrace, out CBaseDoor? door)
     {
-        return gametrace.HitEntityByDesignerName(out door, "func_door", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out door,
+            "func_door",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -160,7 +198,11 @@ public static class GameTraceExtensions
     /// <returns>True if a rotating door was hit, false otherwise.</returns>
     public static bool HitDoor(this CGameTrace gametrace, out CRotDoor? door)
     {
-        return gametrace.HitEntityByDesignerName(out door, "func_door_rotating", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out door,
+            "func_door_rotating",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -171,7 +213,11 @@ public static class GameTraceExtensions
     /// <returns>True if a ladder was hit, false otherwise.</returns>
     public static bool HitLadder(this CGameTrace gametrace, out CFuncLadder? ladder)
     {
-        return gametrace.HitEntityByDesignerName(out ladder, "func_ladder", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out ladder,
+            "func_ladder",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -182,7 +228,11 @@ public static class GameTraceExtensions
     /// <returns>True if a grenade was hit, false otherwise.</returns>
     public static bool HitGrenade(this CGameTrace gametrace, out CBaseCSGrenade? grenade)
     {
-        return gametrace.HitEntityByDesignerName(out grenade, "grenade", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out grenade,
+            "grenade",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -193,7 +243,11 @@ public static class GameTraceExtensions
     /// <returns>True if a planted C4 was hit, false otherwise.</returns>
     public static bool HitPlantedC4(this CGameTrace gametrace, out CPlantedC4? c4)
     {
-        return gametrace.HitEntityByDesignerName(out c4, "planted_c4", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out c4,
+            "planted_c4",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -202,9 +256,16 @@ public static class GameTraceExtensions
     /// <param name="gametrace">The gametrace</param>
     /// <param name="pointWorldText">The point world text that was hit, if any.</param>
     /// <returns>True if a point world text was hit, false otherwise.</returns>
-    public static bool HitPointWorldText(this CGameTrace gametrace, out CPointWorldText? pointWorldText)
+    public static bool HitPointWorldText(
+        this CGameTrace gametrace,
+        out CPointWorldText? pointWorldText
+    )
     {
-        return gametrace.HitEntityByDesignerName(out pointWorldText, "point_worldtext", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out pointWorldText,
+            "point_worldtext",
+            DesignerNameMatchType.Equals
+        );
     }
 
     /// <summary>
@@ -226,6 +287,10 @@ public static class GameTraceExtensions
     /// <returns>True if the world was hit, false otherwise.</returns>
     public static bool HitWorld(this CGameTrace gametrace, out CWorld? world)
     {
-        return gametrace.HitEntityByDesignerName(out world, "worldent", DesignerNameMatchType.Equals);
+        return gametrace.HitEntityByDesignerName(
+            out world,
+            "worldent",
+            DesignerNameMatchType.Equals
+        );
     }
 }

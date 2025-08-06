@@ -532,16 +532,14 @@ public static class EntityUtilities
         QAngle angles
     )
     {
-        var mirrorCam = Utilities.CreateEntityByName<CBaseModelEntity>("prop_dynamic");
+        var mirrorCam = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic");
 
-        if (mirrorCam is null)
+        if (mirrorCam == null)
             return null;
 
-        mirrorCam.Transmit = TransmitType.Always;
         mirrorCam.MoveType = MoveType_t.MOVETYPE_NOCLIP;
-        mirrorCam.SetAbsOrigin(position);
-        mirrorCam.SetAbsAngles(angles);
-        mirrorCam.Spawn();
+        mirrorCam.Teleport(position, (Vector3)angles, Vector.Zero);
+        mirrorCam.DispatchSpawn();
 
         MirrorCameraCDynamic[(int)player.Index] = mirrorCam;
         return mirrorCam;
@@ -571,17 +569,17 @@ public static class EntityUtilities
             return;
 
         entity.SetAbsOrigin(position);
-        entity.SetAbsAngles(angles);
+        entity.SetAbsAngles((System.Numerics.Vector3)angles);
     }
 
     public static void SetAbsOrigin(this CDynamicProp prop, System.Numerics.Vector3 position)
     {
-        prop.Origin = position;
+        prop.Teleport(position, angles, Vector.Zero);
     }
 
     public static void SetAbsAngles(this CDynamicProp prop, System.Numerics.Vector3 angles)
     {
-        prop.Angles = angles;
+        prop.Teleport(position, angles, Vector.Zero);
     }
 
     public static Vector Lerp(this Vector from, Vector to, float t)
