@@ -18,6 +18,8 @@ public static class EntityUtilities
     private static readonly Dictionary<ulong, QAngle> LastCameraAngles = new();
     private static readonly Dictionary<ulong, Vector> LastGoodCameraPos = new();
     private static readonly Dictionary<ulong, float> LastZUpdateTime = new();
+    internal static readonly Dictionary<int, CDynamicProp> MirrorCameraCDynamic = new();
+    public static Dictionary<int, CBaseModelEntity> MirrorCameraCBase { get; } = new();
 
     private static float GetTimeSeconds() =>
         (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
@@ -522,6 +524,64 @@ public static class EntityUtilities
         var targetCamPos = eyePos + backwardDir * desiredDistance;
 
         return targetCamPos;
+    }
+
+    public static CBaseModelEntity? CreateMirrorCameraEntity(
+        CCSPlayerController player,
+        System.Numerics.Vector3 position,
+        QAngle angles
+    )
+    {
+        var mirrorCam = Utilities.CreateEntityByName<CBaseModelEntity>("prop_dynamic");
+
+        if (mirrorCam is null)
+            return null;
+
+        mirrorCam.Transmit = TransmitType.Always;
+        mirrorCam.MoveType = MoveType_t.MOVETYPE_NOCLIP;
+        mirrorCam.SetAbsOrigin(position);
+        mirrorCam.SetAbsAngles(angles);
+        mirrorCam.Spawn();
+
+        MirrorCameraCDynamic[(int)player.Index] = mirrorCam;
+        return mirrorCam;
+    }
+
+    public static void DestroyMirrorCameraEntity(CCSPlayerController player)
+    {
+        if (!MirrorCameraCDynamic.TryGetValue((int)player.Index, out var entity))
+            return;
+
+        if (entity.IsValid)
+            entity.Remove();
+
+        MirrorCameraCDynamic.Remove((int)player.Index);
+    }
+
+    public static void UpdateMirrorCameraPosition(
+        CCSPlayerController player,
+        System.Numerics.Vector3 position,
+        QAngle angles
+    )
+    {
+        if (!MirrorCameraCDynamic.TryGetValue((int)player.Index, out var entity))
+            return;
+
+        if (!entity.IsValid)
+            return;
+
+        entity.SetAbsOrigin(position);
+        entity.SetAbsAngles(angles);
+    }
+
+    public static void SetAbsOrigin(this CDynamicProp prop, System.Numerics.Vector3 position)
+    {
+        prop.Origin = position;
+    }
+
+    public static void SetAbsAngles(this CDynamicProp prop, System.Numerics.Vector3 angles)
+    {
+        prop.Angles = angles;
     }
 
     public static Vector Lerp(this Vector from, Vector to, float t)
