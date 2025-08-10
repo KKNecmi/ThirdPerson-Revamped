@@ -526,9 +526,9 @@ public static class EntityUtilities
         return targetCamPos;
     }
 
-    public static CBaseModelEntity? CreateMirrorCameraEntity(
+    public static CDynamicProp? CreateMirrorCameraEntity(
         CCSPlayerController player,
-        System.Numerics.Vector3 position,
+        Vector position,
         QAngle angles
     )
     {
@@ -538,7 +538,7 @@ public static class EntityUtilities
             return null;
 
         mirrorCam.MoveType = MoveType_t.MOVETYPE_NOCLIP;
-        mirrorCam.Teleport(position, (Vector3)angles, Vector.Zero);
+        mirrorCam.Teleport(position, angles, Vector.Zero);
         mirrorCam.DispatchSpawn();
 
         MirrorCameraCDynamic[(int)player.Index] = mirrorCam;
@@ -558,7 +558,7 @@ public static class EntityUtilities
 
     public static void UpdateMirrorCameraPosition(
         CCSPlayerController player,
-        System.Numerics.Vector3 position,
+        Vector position,
         QAngle angles
     )
     {
@@ -569,17 +569,19 @@ public static class EntityUtilities
             return;
 
         entity.SetAbsOrigin(position);
-        entity.SetAbsAngles((System.Numerics.Vector3)angles);
+        entity.SetAbsAngles(angles);
     }
 
-    public static void SetAbsOrigin(this CDynamicProp prop, System.Numerics.Vector3 position)
+    public static void SetAbsOrigin(this CDynamicProp prop, Vector position)
     {
-        prop.Teleport(position, angles, Vector.Zero);
+        QAngle currentAngles = prop.AbsRotation;
+        prop.Teleport(position, currentAngles, Vector.Zero);
     }
 
-    public static void SetAbsAngles(this CDynamicProp prop, System.Numerics.Vector3 angles)
+    public static void SetAbsAngles(this CDynamicProp prop, QAngle angles)
     {
-        prop.Teleport(position, angles, Vector.Zero);
+        Vector currentPos = prop.AbsOrigin ?? Vector.Zero;
+        prop.Teleport(currentPos, angles, Vector.Zero);
     }
 
     public static Vector Lerp(this Vector from, Vector to, float t)
