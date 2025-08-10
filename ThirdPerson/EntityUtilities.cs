@@ -9,6 +9,7 @@ using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2TraceRay.Class;
 using CS2TraceRay.Enum;
+using CS2TraceRay.Struct;
 
 namespace ThirdPersonRevamped;
 

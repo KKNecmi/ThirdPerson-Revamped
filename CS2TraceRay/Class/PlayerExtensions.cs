@@ -20,7 +20,12 @@ public static class PlayerExtensions
     /// <param name="contents">The content flags to filter the trace.</param>
     /// <param name="skipPlayer">Optional player whose pawn should be ignored in the trace.</param>
     /// <returns>A <see cref="CGameTrace"/> object containing the trace results, or null if the trace couldn't be performed.</returns>
-    public static CGameTrace? GetGameTraceByEyePosition(this CCSPlayerController player, TraceMask mask, Contents contents, CCSPlayerController? skipPlayer)
+    public static CGameTrace? GetGameTraceByEyePosition(
+        this CCSPlayerController player,
+        TraceMask mask,
+        Contents contents,
+        CCSPlayerController? skipPlayer
+    )
     {
         return player.PlayerPawn.Value?.GetGameTraceByEyePosition(mask, contents, skipPlayer);
     }
@@ -33,7 +38,12 @@ public static class PlayerExtensions
     /// <param name="contents">The contents flags to filter the trace.</param>
     /// <param name="skipPlayer">Optional player whose pawn should be ignored in the trace.</param>
     /// <returns>A <see cref="CGameTrace"/> object containing the trace results, or null if the trace couldn't be performed.</returns>
-    public static CGameTrace? GetGameTraceByEyePosition(this CCSPlayerPawn playerPawn, TraceMask mask, Contents contents, CCSPlayerController? skipPlayer)
+    public static CGameTrace? GetGameTraceByEyePosition(
+        this CCSPlayerPawn playerPawn,
+        TraceMask mask,
+        Contents contents,
+        CCSPlayerController? skipPlayer
+    )
     {
         if (playerPawn.GetEyePosition() is not { } eyePosition)
             return null;
@@ -84,22 +94,27 @@ public static class PlayerExtensions
     /// <returns>The distance in units, or 0 if the player is on the ground or the measurement couldn't be taken.</returns>
     public static float GetGroundDistance(this CCSPlayerPawn playerPawn)
     {
-        if (playerPawn.GroundEntity.IsValid ||
-            playerPawn.AbsOrigin is not { } absOrigin)
+        if (playerPawn.GroundEntity.IsValid || playerPawn.AbsOrigin is not { } absOrigin)
             return 0.0f;
 
-        CGameTrace _trace = TraceRay.TraceShape(absOrigin, new QAngle(90, 0, 0), TraceMask.MaskAll, Contents.Sky, 0);
+        CGameTrace _trace = TraceRay.TraceShape(
+            absOrigin,
+            new QAngle(90, 0, 0),
+            TraceMask.MaskAll,
+            Contents.Sky,
+            0
+        );
         return _trace.Distance();
     }
-    
+
     /// <summary>
     /// Retrieves the bitmask representing the content layers this pawn interacts with (trace mask).
     /// Commonly used in trace and collision filtering logic.
     /// </summary>
     /// <param name="pawn">The player pawn instance.</param>
     /// <returns>The interaction bitmask from the pawn's collision attributes.</returns>
-    public static ulong GetInteractsWith(this CCSPlayerPawn pawn)
-        => pawn.Collision.CollisionAttribute.InteractsWith;
+    public static ulong GetInteractsWith(this CCSPlayerPawn pawn) =>
+        pawn.Collision.CollisionAttribute.InteractsWith;
 
     /// <summary>
     /// Retrieves the hierarchy ID used for organizing entity relationships during collision detection.
@@ -107,6 +122,15 @@ public static class PlayerExtensions
     /// </summary>
     /// <param name="pawn">The player pawn instance.</param>
     /// <returns>The hierarchy ID from the pawn's collision attributes.</returns>
-    public static ushort GetHierarchyId(this CCSPlayerPawn pawn)
-        => pawn.Collision.CollisionAttribute.HierarchyId;
+    public static ushort GetHierarchyId(this CCSPlayerPawn pawn) =>
+        pawn.Collision.CollisionAttribute.HierarchyId;
+
+    public static object GetGameTraceByEyePosition(
+        CCSPlayerController player,
+        Vector targetCamPos,
+        ulong maskShot
+    )
+    {
+        throw new NotImplementedException();
+    }
 }
