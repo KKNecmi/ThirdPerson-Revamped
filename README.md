@@ -51,9 +51,6 @@ Please refer to the license terms of the original project.
 {
   "OnActivated": " | {YELLOW}ThirdPerson {GREEN}Activated",
   "OnDeactivated": " | {YELLOW}ThirdPerson {RED}Deactivated",
-  "OnActivatedMirror": " | {YELLOW}Mirror Mode {GREEN}Activated",
-  "OnDeactivatedMirror": " | {YELLOW}Mirror Mode {RED}Deactivated",
-  "OnWarningMirror": " | {YELLOW}Mirror Mode {GRAY}requires ThirdPerson to be active!",
   "Prefix": " [{BLUE}ThirdPerson Revamped",
   "UseOnlyAdmin": false,
   "OnlyAdminFlag": "@css/slay",
