@@ -18,8 +18,6 @@ public static class EntityUtilities
     private static readonly Dictionary<ulong, QAngle> LastCameraAngles = new();
     private static readonly Dictionary<ulong, Vector> LastGoodCameraPos = new();
     private static readonly Dictionary<ulong, float> LastZUpdateTime = new();
-    internal static readonly Dictionary<int, CDynamicProp> MirrorCameraCDynamic = new();
-    public static Dictionary<int, CBaseModelEntity> MirrorCameraCBase { get; } = new();
 
     private static float GetTimeSeconds() =>
         (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
@@ -137,17 +135,6 @@ public static class EntityUtilities
             return;
 
         var pawn = player.PlayerPawn?.Value;
-        if (IsMirrorEnabled(player))
-        {
-            if (pawn == null || pawn.AbsOrigin == null)
-                return;
-
-            var fixedPos = player.CalculateSafeCameraPosition(75f, 40f);
-            var fixedAngle = GetMirrorAngle(player);
-
-            prop.Teleport(fixedPos, fixedAngle, new Vector());
-            return;
-        }
 
         const float desiredDistance = 90f;
         const float minHeightAbovePlayer = 70f;
@@ -192,12 +179,6 @@ public static class EntityUtilities
 
         Vector smoothedPos = currentPos.Lerp(targetPos, effectiveLerp);
 
-        if (IsMirrorEnabled(player))
-        {
-            prop.Teleport(smoothedPos, pawn.V_angle, new Vector());
-            return;
-        }
-
         if (LastGoodCameraPos.TryGetValue(player.SteamID, out var lastGoodPos))
         {
             float zDiff = smoothedPos.Z - lastGoodPos.Z;
@@ -237,11 +218,6 @@ public static class EntityUtilities
         QAngle targetAngle = pawn.V_angle;
         prop.Teleport(smoothedPos, targetAngle, new Vector());
         LastGoodCameraPos[player.SteamID] = smoothedPos;
-
-        if (!IsMirrorEnabled(player))
-        {
-            LastGoodCameraPos[player.SteamID] = smoothedPos;
-        }
     }
 
     public static bool IsMoving(this CCSPlayerController player)
@@ -526,64 +502,6 @@ public static class EntityUtilities
         return targetCamPos;
     }
 
-    public static CDynamicProp? CreateMirrorCameraEntity(
-        CCSPlayerController player,
-        Vector position,
-        QAngle angles
-    )
-    {
-        var mirrorCam = Utilities.CreateEntityByName<CBaseModelEntity>("prop_dynamic");
-
-        if (mirrorCam is null)
-            return null;
-
-        mirrorCam.Transmit = TransmitType.Always;
-        mirrorCam.MoveType = MoveType_t.MOVETYPE_NOCLIP;
-        mirrorCam.SetAbsOrigin(position);
-        mirrorCam.SetAbsAngles(angles);
-        mirrorCam.Spawn();
-
-        MirrorCameraCDynamic[(int)player.Index] = mirrorCam;
-        return mirrorCam;
-    }
-
-    public static void DestroyMirrorCameraEntity(CCSPlayerController player)
-    {
-        if (!MirrorCameraCDynamic.TryGetValue((int)player.Index, out var entity))
-            return;
-
-        if (entity.IsValid)
-            entity.Remove();
-
-        MirrorCameraCDynamic.Remove((int)player.Index);
-    }
-
-    public static void UpdateMirrorCameraPosition(
-        CCSPlayerController player,
-        Vector position,
-        QAngle angles
-    )
-    {
-        if (!MirrorCameraCDynamic.TryGetValue((int)player.Index, out var entity))
-            return;
-
-        if (!entity.IsValid)
-            return;
-
-        entity.SetAbsOrigin(position);
-        entity.SetAbsAngles(angles);
-    }
-
-    public static void SetAbsOrigin(this CDynamicProp prop, Vector position)
-    {
-        prop.Origin = position;
-    }
-
-    public static void SetAbsAngles(this CDynamicProp prop, QAngle angles)
-    {
-        prop.Angles = angles;
-    }
-
     public static Vector Lerp(this Vector from, Vector to, float t)
     {
         return new Vector(
@@ -640,18 +558,5 @@ public static class EntityUtilities
     public static bool IsNullOrInvalid(this CCSPlayerController? player)
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
-    }
-
-    public static bool IsMirrorEnabled(CCSPlayerController player)
-    {
-        return ThirdPersonRevamped.mirrorEnabled.ContainsKey(player)
-            && ThirdPersonRevamped.mirrorEnabled[player];
-    }
-
-    public static QAngle GetMirrorAngle(CCSPlayerController player)
-    {
-        return ThirdPersonRevamped.mirrorAngle.TryGetValue(player, out var angle)
-            ? angle
-            : new QAngle(0, 0, 0);
     }
 }
