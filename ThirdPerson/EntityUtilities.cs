@@ -41,6 +41,30 @@ public static class EntityUtilities
         }
     }
 
+    private static bool IsZoneEntity(CEntityInstance entity)
+    {
+        if (!entity.IsValid)
+            return false;
+
+        string className = entity.DesignerName;
+
+        string targetName = entity.Entity?.Name ?? "";
+
+        return className.Contains("trigger_")
+            || targetName.Contains("timer_zone")
+            || targetName.Contains("start_zone")
+            || targetName.Contains("end_zone")
+            || targetName.Contains("bonus_zone");
+    }
+
+    private static CEntityInstance[] GetZoneEntities()
+    {
+        return Utilities
+            .FindAllEntitiesByDesignerName<CEntityInstance>("trigger_multiple")
+            .Where(IsZoneEntity)
+            .ToArray();
+    }
+
     private static float MoveTowards(float current, float target, float baseStepSize)
     {
         current = NormalizeAngle(current);
@@ -139,9 +163,9 @@ public static class EntityUtilities
 
         const float desiredDistance = 90f;
         const float minHeightAbovePlayer = 70f;
-        const float maxHeightAbovePlayer = 110f;
-        const float minDistanceFromPlayer = 78f;
-        const float maxDistanceFromPlayer = 78f;
+        const float maxHeightAbovePlayer = 90f;
+        const float minDistanceFromPlayer = 100f;
+        const float maxDistanceFromPlayer = 100f;
         const float positionStabilization = 0.8f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
@@ -401,12 +425,26 @@ public static class EntityUtilities
             targetCamPos + new Vector(0, 0, -200),
             (ulong)TraceMask.MaskSolid,
             0ul,
-            pawn.Handle
+            pawn.Handle,
+            ignoreZones: true
         );
 
         if (groundTrace.DidHit())
         {
-            minAllowedZ = Math.Max(minAllowedZ, groundTrace.Position.Z + 15f);
+            bool isZone = false;
+            if (groundTrace.HitEntity != IntPtr.Zero)
+            {
+                var hitEntity = new CEntityInstance(groundTrace.HitEntity);
+                if (hitEntity.IsValid)
+                {
+                    isZone = IsZoneEntity(hitEntity);
+                }
+            }
+
+            if (!isZone)
+            {
+                minAllowedZ = Math.Max(minAllowedZ, groundTrace.Position.Z + 15f);
+            }
         }
 
         var trace = TraceRay.GetGameTraceByEyePosition(
@@ -419,25 +457,42 @@ public static class EntityUtilities
 
         if (trace.DidHit())
         {
-            Vector hitVec = trace.Position.ToVector();
-            float distanceToWall = (hitVec - eyePos).Length();
-
-            float clampedDistance;
-
-            if (distanceToWall < 16f)
+            bool isZone = false;
+            if (trace.HitEntity != IntPtr.Zero)
             {
-                clampedDistance = 10f;
+                var hitEntity = new CEntityInstance(trace.HitEntity);
+                if (hitEntity.IsValid)
+                {
+                    isZone = IsZoneEntity(hitEntity);
+                }
             }
-            else if (distanceToWall < desiredDistance)
+
+            if (isZone)
             {
-                clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
+                finalPos = targetCamPos;
             }
             else
             {
-                clampedDistance = desiredDistance;
-            }
+                Vector hitVec = trace.Position.ToVector();
+                float distanceToWall = (hitVec - eyePos).Length();
 
-            finalPos = eyePos + backwardDir * clampedDistance;
+                float clampedDistance;
+
+                if (distanceToWall < 16f)
+                {
+                    clampedDistance = 10f;
+                }
+                else if (distanceToWall < desiredDistance)
+                {
+                    clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
+                }
+                else
+                {
+                    clampedDistance = desiredDistance;
+                }
+
+                finalPos = eyePos + backwardDir * clampedDistance;
+            }
         }
         else
         {
