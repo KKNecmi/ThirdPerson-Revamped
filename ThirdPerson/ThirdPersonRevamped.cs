@@ -56,6 +56,8 @@ namespace ThirdPersonRevamped
             CPhysicsPropMultiplayer
         > smoothThirdPersonPool = new Dictionary<CCSPlayerController, CPhysicsPropMultiplayer>();
 
+        public static Dictionary<CCSPlayerController, CDynamicProp> frontCameraPool =
+            new Dictionary<CCSPlayerController, CDynamicProp>();
         public static Dictionary<CCSPlayerController, WeaponList> weapons =
             new Dictionary<CCSPlayerController, WeaponList>();
 
@@ -67,6 +69,7 @@ namespace ThirdPersonRevamped
 
             AddCommand("css_tp", "Allows to use thirdperson", OnTPCommand);
             AddCommand("css_thirdperson", "Allows to use thirdperson", OnTPCommand);
+            AddCommand("css_tpfront", "ThirdPerson camera in front of player", OnTPFrontCommand);
         }
 
         public void OnGameFrame()
@@ -97,6 +100,21 @@ namespace ThirdPersonRevamped
                 var cameraPos = player.CalculateSafeCameraPosition(90f, 90f);
                 var cameraAngle = player.PlayerPawn.Value.V_angle;
                 camera.Teleport(cameraPos, cameraAngle, new Vector());
+            }
+
+            foreach (var data in frontCameraPool)
+            {
+                var player = data.Key;
+                var cam = data.Value;
+
+                if (player.IsNullOrInvalid() || !cam.IsValid)
+                    continue;
+
+                Vector posInFront = player.CalculatePositionInFront(-110, 75);
+                QAngle lookBack = player.PlayerPawn.Value.V_angle;
+                lookBack.Y += 180f;
+
+                cam.Teleport(posInFront, lookBack, new Vector());
             }
         }
 
@@ -129,6 +147,95 @@ namespace ThirdPersonRevamped
             }
 
             return HookResult.Continue;
+        }
+
+        public void OnTPFrontCommand(CCSPlayerController? caller, CommandInfo command)
+        {
+            if (caller == null || !caller.PawnIsAlive)
+                return;
+
+            if (!frontCameraPool.ContainsKey(caller))
+            {
+                CDynamicProp frontCam = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic");
+                if (frontCam == null)
+                    return;
+
+                frontCam.DispatchSpawn();
+                frontCam.SetColor(Color.FromArgb(0, 255, 255, 255));
+
+                Vector posInFront = caller.CalculatePositionInFront(110, 75);
+                QAngle lookBack = caller.PlayerPawn.Value.V_angle;
+                lookBack.Y += 180f;
+
+                frontCam.Teleport(posInFront, lookBack, new Vector());
+
+                caller.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = frontCam.EntityHandle.Raw;
+                Utilities.SetStateChanged(
+                    caller.PlayerPawn.Value,
+                    "CBasePlayerPawn",
+                    "m_pCameraServices"
+                );
+
+                frontCameraPool[caller] = frontCam;
+                caller.PrintToChat(ReplaceColorTags("[ThirdPerson] Front camera activated"));
+            }
+            else
+            {
+                caller.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = uint.MaxValue;
+                Utilities.SetStateChanged(
+                    caller.PlayerPawn.Value,
+                    "CBasePlayerPawn",
+                    "m_pCameraServices"
+                );
+
+                if (frontCameraPool[caller].IsValid)
+                    frontCameraPool[caller].Remove();
+
+                frontCameraPool.Remove(caller);
+                caller.PrintToChat(ReplaceColorTags("[ThirdPerson] Front camera deactivated"));
+            }
+        }
+
+        public void SpawnFrontCamera(CCSPlayerController caller)
+        {
+            if (frontCameraPool.ContainsKey(caller))
+            {
+                var oldCam = frontCameraPool[caller];
+                if (oldCam.IsValid)
+                    oldCam.Remove();
+                frontCameraPool.Remove(caller);
+            }
+
+            var camera = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic");
+            camera.DispatchSpawn();
+            camera.SetColor(Color.FromArgb(0, 255, 255, 255));
+
+            var pawn = caller.PlayerPawn!.Value;
+            float distanceInFront = 110f;
+            float heightOffset = 75f;
+
+            float yawRadians = pawn.EyeAngles.Y * (float)Math.PI / 180f;
+            Vector forward = new Vector(MathF.Cos(yawRadians), MathF.Sin(yawRadians), 0);
+
+            Vector cameraPos =
+                pawn.AbsOrigin + forward * distanceInFront + new Vector(0, 0, heightOffset);
+
+            Vector dirToPlayer = (pawn.AbsOrigin + new Vector(0, 0, 50) - cameraPos).Normalized();
+            float pitch = -MathF.Asin(dirToPlayer.Z) * 180f / (float)Math.PI;
+            float yaw = MathF.Atan2(dirToPlayer.Y, dirToPlayer.X) * 180f / (float)Math.PI;
+            QAngle cameraAngle = new QAngle(pitch, yaw, 0);
+
+            camera.Teleport(cameraPos, cameraAngle, new Vector());
+
+            caller.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = camera.EntityHandle.Raw;
+            Utilities.SetStateChanged(
+                caller.PlayerPawn.Value,
+                "CBasePlayerPawn",
+                "m_pCameraServices"
+            );
+
+            frontCameraPool.Add(caller, camera);
+            caller.PrintToChat(ReplaceColorTags(Config.Prefix + "Front camera spawned"));
         }
 
         public void OnTPCommand(CCSPlayerController? caller, CommandInfo command)
@@ -275,7 +382,7 @@ namespace ThirdPersonRevamped
                 _cameraProp.Collision.SolidFlags = 12;
                 _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
-                var initialPosition = caller.CalculatePositionInFront(-110, 75);
+                var initialPosition = caller.CalculatePositionInFront(110, 75);
                 var viewAngle = caller.PlayerPawn.Value.V_angle;
 
                 _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
