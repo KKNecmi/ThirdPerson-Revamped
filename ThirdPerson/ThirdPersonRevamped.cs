@@ -95,7 +95,7 @@ namespace ThirdPersonRevamped
                 var pawn = player.PlayerPawn.Value;
 
                 var cameraPos = player.CalculateSafeCameraPosition(90f, 90f);
-                var cameraAngle = player.PlayerPawn.Value.V_angle;
+                var cameraAngle = player.PlayerPawn.Value?.V_angle;
                 camera.Teleport(cameraPos, cameraAngle, new Vector());
             }
         }
@@ -276,7 +276,7 @@ namespace ThirdPersonRevamped
                 _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
                 var initialPosition = caller.CalculatePositionInFront(-110, 75);
-                var viewAngle = caller.PlayerPawn.Value.V_angle;
+                var viewAngle = caller.PlayerPawn.Value?.V_angle;
 
                 _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
 

@@ -142,7 +142,7 @@ public static class EntityUtilities
 
         Vector cameraPos = player.CalculateSafeCameraPosition(safeDistance, 90);
 
-        QAngle cameraAngle = player.PlayerPawn.Value.EyeAngles;
+        QAngle cameraAngle = player.PlayerPawn.Value!.EyeAngles;
 
         _cameraProp.Teleport(cameraPos, cameraAngle, new Vector());
     }
@@ -318,7 +318,7 @@ public static class EntityUtilities
 
         Vector player1Direction = new(MathF.Cos(yawAngleRadians), MathF.Sin(yawAngleRadians), 0);
 
-        if (player1Pawn.AbsOrigin == null || player2Pawn.AbsOrigin == null)
+        if (player1Pawn.AbsOrigin == null || player2Pawn!.AbsOrigin == null)
             return false;
 
         Vector player1ToPlayer2 = player2Pawn.AbsOrigin - player1Pawn.AbsOrigin;
@@ -378,7 +378,7 @@ public static class EntityUtilities
                 p != null
                 && p.IsValid
                 && p.PlayerPawn.IsValid
-                && p.PlayerPawn.Value.AbsOrigin != null
+                && p.PlayerPawn.Value?.AbsOrigin != null
                 && (p.PlayerPawn.Value.AbsOrigin - checkPos).Length() < 8.0f
             );
 
