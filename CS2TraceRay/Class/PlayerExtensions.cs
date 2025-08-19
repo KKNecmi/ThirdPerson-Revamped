@@ -125,6 +125,14 @@ public static class PlayerExtensions
     public static ushort GetHierarchyId(this CCSPlayerPawn pawn) =>
         pawn.Collision.CollisionAttribute.HierarchyId;
 
+    /// <summary>
+    /// Gets the game trace from the player's eye position to a target camera position.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="targetCamPos"></param>
+    /// <param name="maskShot"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
     public static object GetGameTraceByEyePosition(
         CCSPlayerController player,
         Vector targetCamPos,

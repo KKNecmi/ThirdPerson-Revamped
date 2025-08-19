@@ -286,7 +286,7 @@ namespace ThirdPersonRevamped
                     {
                         if (_cameraProp.IsValid && caller.IsValid && caller.PlayerPawn.IsValid)
                         {
-                            caller.PlayerPawn.Value.CameraServices!.ViewEntity.Raw = _cameraProp
+                            caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
                                 .EntityHandle
                                 .Raw;
                             Utilities.SetStateChanged(
@@ -303,7 +303,7 @@ namespace ThirdPersonRevamped
 
                 if (Config.StripOnUse)
                 {
-                    caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = true;
+                    caller.PlayerPawn.Value!.WeaponServices!.PreventWeaponPickup = true;
 
                     if (weapons.ContainsKey(caller))
                         weapons.Remove(caller);
