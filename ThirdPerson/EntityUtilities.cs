@@ -163,9 +163,9 @@ public static class EntityUtilities
 
         const float desiredDistance = 90f;
         const float minHeightAbovePlayer = 70f;
-        const float maxHeightAbovePlayer = 90f;
-        const float minDistanceFromPlayer = 100f;
-        const float maxDistanceFromPlayer = 100f;
+        const float maxHeightAbovePlayer = 110f;
+        const float minDistanceFromPlayer = 78f;
+        const float maxDistanceFromPlayer = 78f;
         const float positionStabilization = 0.8f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
