@@ -128,6 +128,41 @@ public static unsafe partial class TraceRay
     }
 
     /// <summary>
+    /// Performs a trace from origin to end with specified mask and content flags
+    /// </summary>
+    /// <param name="start">Starting position of the trace</param>
+    /// <param name="end">Ending position of the trace</param>
+    /// <param name="mask">Trace mask flags as ulong</param>
+    /// <param name="content">Content flags as ulong</param>
+    /// <param name="skip">Entity to skip (IntPtr handle)</param>
+    /// <param name="result">Return of _traceShape</param>
+    /// <returns>CGameTrace containing the trace results</returns>
+    public static CGameTrace TraceShapeWithResult(
+        Vector start,
+        Vector end,
+        ulong mask,
+        ulong content,
+        IntPtr skip,
+        out bool result
+    )
+    {
+        CGameTrace* _trace = stackalloc CGameTrace[1];
+        IntPtr _gameTraceManagerAddress = Address.GetAbsoluteAddress(GameTraceManager, 3, 7);
+
+        result = _traceShape(
+            *(IntPtr*)_gameTraceManagerAddress,
+            start.Handle,
+            end.Handle,
+            skip,
+            mask,
+            content,
+            _trace
+        );
+
+        return *_trace;
+    }
+
+    /// <summary>
     /// Performs a hull-based ray trace using the provided shape, direction, and filter information.
     /// This method wraps the native _traceShapeRayFilter call, setting up the necessary filter and trace data on the stack.
     /// </summary>
@@ -150,6 +185,47 @@ public static unsafe partial class TraceRay
         _filter->Vtable = (void*)_vtable;
 
         _traceShapeRayFilter(
+            *(nint*)_gameTraceManager,
+            &ray,
+            start.Handle,
+            end.Handle,
+            _filter,
+            _trace
+        );
+
+        return *_trace;
+    }
+
+    /// <summary>
+    /// Performs a hull-based ray trace using the provided shape, direction, and filter information.
+    /// This method wraps the native _traceShapeRayFilter call, setting up the necessary filter and trace data on the stack.
+    /// </summary>
+    /// <param name="start">Starting position of the trace</param>
+    /// <param name="end">Starting position of the trace</param>
+    /// <param name="filter"> The filter used to determine which entities or collisions should be excluded during the trace./// </param>
+    /// <param name="ray">A pointer to the shape of the ray (e.g., line, sphere, hull, capsule, mesh) to be traced.</param>
+    /// <param name="result">Return of _traceShape</param>
+    /// <returns>
+    /// Returns a <see cref="CGameTrace"/> structure containing the result of the trace operation, including hit data, entity, and surface details.
+    /// </returns>
+    public static CGameTrace TraceHullWithResult(
+        Vector start,
+        Vector end,
+        CTraceFilter filter,
+        Ray ray,
+        out bool result
+    )
+    {
+        CGameTrace* _trace = stackalloc CGameTrace[1];
+        CTraceFilter* _filter = stackalloc CTraceFilter[1];
+
+        IntPtr _vtable = Address.GetAbsoluteAddress(CTraceFilterVtable, 3, 7);
+        IntPtr _gameTraceManager = Address.GetAbsoluteAddress(GameTraceManager, 3, 7);
+
+        *_filter = filter;
+        _filter->Vtable = (void*)_vtable;
+
+        result = _traceShapeRayFilter(
             *(nint*)_gameTraceManager,
             &ray,
             start.Handle,
