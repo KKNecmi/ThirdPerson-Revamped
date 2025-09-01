@@ -168,7 +168,7 @@ public static class EntityUtilities
         const float maxHeightAbovePlayer = 110f;
         const float minDistanceFromPlayer = 78f;
         const float maxDistanceFromPlayer = 78f;
-        const float positionStabilization = 0.8f;
+        const float positionStabilization = 0.3f;
 
         float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
         Vector targetPos = player.CalculateSafeCameraPosition(safeDistance, 70f);
@@ -427,8 +427,7 @@ public static class EntityUtilities
             targetCamPos + new Vector(0, 0, -200),
             (ulong)TraceMask.MaskSolid,
             0ul,
-            pawn.Handle,
-            ignoreZones: true
+            pawn.Handle
         );
 
         if (groundTrace.DidHit())

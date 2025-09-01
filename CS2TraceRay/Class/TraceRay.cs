@@ -70,15 +70,13 @@ public static unsafe partial class TraceRay
     /// <param name="mask">Trace mask flags as ulong</param>
     /// <param name="content">Content flags as ulong</param>
     /// <param name="skip">Entity to skip (IntPtr handle)</param>
-    /// <param name="ignoreZones">Whether to ignore zone entities</param>
     /// <returns>CGameTrace containing the trace results</returns>
     public static CGameTrace TraceShape(
         Vector origin,
         QAngle angle,
         ulong mask,
         ulong content,
-        IntPtr skip,
-        bool ignoreZones = false
+        IntPtr skip
     )
     {
         Vector _forward = new();
@@ -100,15 +98,13 @@ public static unsafe partial class TraceRay
     /// <param name="mask">Trace mask flags as ulong</param>
     /// <param name="content">Content flags as ulong</param>
     /// <param name="skip">Entity to skip (IntPtr handle)</param>
-    /// <param name="ignoreZones">Whether to ignore zone entities</param>
     /// <returns>CGameTrace containing the trace results</returns>
     public static CGameTrace TraceShape(
         Vector start,
         Vector end,
         ulong mask,
         ulong content,
-        IntPtr skip,
-        bool ignoreZones = false
+        IntPtr skip
     )
     {
         CGameTrace* _trace = stackalloc CGameTrace[1];
@@ -243,7 +239,6 @@ public static unsafe partial class TraceRay
     /// <param name="player">The player controller whose eye position is used as the trace start point.</param>
     /// <param name="destination">The world-space destination position to trace towards.</param>
     /// <param name="mask">Trace mask flags as a ulong, specifying which types of surfaces or entities to consider during the trace.</param>
-    /// <param name="ignoreZones">Whether to ignore zone entities</param>
     /// <returns>
     /// Returns a <see cref="CGameTrace"/> structure containing the result of the trace operation, including hit information such as the entity hit, surface details, and impact position.
     /// If the player's pawn or its origin is unavailable, returns a default (empty) <see cref="CGameTrace"/>.
@@ -251,8 +246,7 @@ public static unsafe partial class TraceRay
     public static CGameTrace GetGameTraceByEyePosition(
         CCSPlayerController player,
         Vector destination,
-        ulong mask,
-        bool ignoreZones = false
+        ulong mask
     )
     {
         var pawn = player.PlayerPawn?.Value;
