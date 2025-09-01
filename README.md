@@ -21,7 +21,7 @@ Please refer to the license terms of the original project.
 
 ## ✅ Features
 
-- Toggleable third-person view (`!tp`, `!thirdperson`, or `css_thirdperson`)
+- Toggleable third-person view (`!customcommand`, `!thirdperson`, or `css_thirdperson`)
 - Smooth camera transitions (optional)
 - Admin-only access (configurable)
 - Configurable messages and behavior
@@ -55,9 +55,11 @@ Please refer to the license terms of the original project.
   "OnActivated": " | {YELLOW}ThirdPerson {GREEN}Activated",
   "OnDeactivated": " | {YELLOW}ThirdPerson {RED}Deactivated",
   "Prefix": " [{BLUE}ThirdPerson Revamped",
+  "CustomTPCommand": "tp",
   "UseOnlyAdmin": false,
   "OnlyAdminFlag": "@css/slay",
   "NoPermission": "You don\u0027t have to access this command.",
+  "BlockCamera": true,
   "UseSmoothCam": true,
   "SmoothCamDuration": 0.05,
   "StripOnUse": false,

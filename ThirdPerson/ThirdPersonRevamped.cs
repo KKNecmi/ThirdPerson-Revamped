@@ -66,8 +66,20 @@ namespace ThirdPersonRevamped
             RegisterEventHandler<EventRoundStart>(OnRoundStart);
             RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt, HookMode.Pre);
 
-            AddCommand("css_tp", "Allows to use thirdperson", OnTPCommand);
-            AddCommand("css_thirdperson", "Allows to use thirdperson", OnTPCommand);
+            RegisterTPCommands();
+        }
+
+        private void RegisterTPCommands()
+        {
+            AddCommand("css_thirdperson", "Third person", OnTPCommand);
+
+            if (
+                !string.IsNullOrEmpty(Config.CustomTPCommand)
+                && Config.CustomTPCommand != "thirdperson"
+            )
+            {
+                AddCommand($"css_{Config.CustomTPCommand}", "Third person command", OnTPCommand);
+            }
         }
 
         public void OnGameFrame()
@@ -426,6 +438,9 @@ namespace ThirdPersonRevamped
 
         [JsonPropertyName("Prefix")]
         public string Prefix { get; set; } = " [{BLUE}ThirdPerson Revamped";
+
+        [JsonPropertyName("CustomTPCommand")]
+        public string CustomTPCommand { get; set; } = "tp";
 
         [JsonPropertyName("UseOnlyAdmin")]
         public bool UseOnlyAdmin { get; set; } = false;
