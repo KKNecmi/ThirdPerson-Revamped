@@ -127,7 +127,7 @@ public static class EntityUtilities
         float verticalOffset = 70.0f;
 
         Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
-        QAngle targetAngle = pawn.EyeAngles;
+        QAngle targetAngle = pawn.V_angle;
 
         camera.Teleport(targetPos, targetAngle, new Vector());
     }
@@ -284,10 +284,10 @@ public static class EntityUtilities
     )
     {
         var pawn = player.PlayerPawn?.Value;
-        if (pawn?.AbsOrigin == null || pawn.EyeAngles == null)
+        if (pawn?.AbsOrigin == null || pawn.V_angle == null)
             return new Vector(0, 0, 0);
 
-        float yawAngleRadians = (float)(pawn.EyeAngles.Y * Math.PI / 180.0);
+        float yawAngleRadians = (float)(pawn.V_angle.Y * Math.PI / 180.0);
         float offsetX = offSetXY * (float)Math.Cos(yawAngleRadians);
         float offsetY = offSetXY * (float)Math.Sin(yawAngleRadians);
 
@@ -366,7 +366,7 @@ public static class EntityUtilities
         if (pawn?.AbsOrigin == null)
             return safeDistance;
 
-        float yawRadians = pawn.EyeAngles!.Y * (float)Math.PI / 180f;
+        float yawRadians = pawn.V_angle!.Y * (float)Math.PI / 180f;
         var backward = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
         var allPlayers = Utilities.GetPlayers();
 
@@ -407,8 +407,8 @@ public static class EntityUtilities
 
         Vector pawnPos = pawn.AbsOrigin;
 
-        float yawRadians = pawn.EyeAngles.Y * (float)Math.PI / 180f;
-        float pitchRadians = pawn.EyeAngles.X * (float)Math.PI / 180f;
+        float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
+        float pitchRadians = pawn.V_angle.X * (float)Math.PI / 180f;
 
         float pitchFactor =
             1.0f - Math.Clamp(Math.Abs(pitchRadians) / ((float)Math.PI / 2f), 0, 0.5f);
@@ -547,10 +547,10 @@ public static class EntityUtilities
     )
     {
         var pawn = player.PlayerPawn?.Value;
-        if (pawn == null || pawn.AbsOrigin == null || pawn.EyeAngles == null)
+        if (pawn == null || pawn.AbsOrigin == null || pawn.V_angle == null)
             return new Vector(0, 0, 0);
 
-        float yawRadians = pawn.EyeAngles.Y * (float)Math.PI / 180f;
+        float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
         var backwardDir = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
         var eyePos = new Vector(pawn.AbsOrigin.X, pawn.AbsOrigin.Y, fixedZ);
         var targetCamPos = eyePos + backwardDir * desiredDistance;
