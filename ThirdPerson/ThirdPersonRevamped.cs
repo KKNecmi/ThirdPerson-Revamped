@@ -36,17 +36,16 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.3";
+        public override string ModuleVersion => "1.0.5";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
         public Config Config { get; set; } = null!;
-        public static Config cfg = null!;
 
         public void OnConfigParsed(Config config)
         {
             Config = config;
-            cfg = config;
+            BlockCamera = config.UseBlockCamera;
         }
 
         public static Dictionary<CCSPlayerController, CDynamicProp> thirdPersonPool =
@@ -58,6 +57,8 @@ namespace ThirdPersonRevamped
 
         public static Dictionary<CCSPlayerController, WeaponList> weapons =
             new Dictionary<CCSPlayerController, WeaponList>();
+
+        public static bool BlockCamera { get; private set; }
 
         public override void Load(bool hotReload)
         {
@@ -434,6 +435,9 @@ namespace ThirdPersonRevamped
 
         [JsonPropertyName("NoPermission")]
         public string NoPermission { get; set; } = "You don't have to access this command.";
+
+        [JsonPropertyName("BlockCamera")]
+        public bool UseBlockCamera { get; set; } = true;
 
         [JsonPropertyName("UseSmoothCam")]
         public bool UseSmooth { get; set; } = true;

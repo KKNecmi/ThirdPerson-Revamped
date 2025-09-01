@@ -23,6 +23,8 @@ public static class EntityUtilities
     private static float GetTimeSeconds() =>
         (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
 
+    private static bool BlockCamera => ThirdPersonRevamped.BlockCamera;
+
     public static class DebugLogger
     {
         public static void Log(
@@ -457,41 +459,48 @@ public static class EntityUtilities
 
         if (trace.DidHit())
         {
-            bool isZone = false;
-            if (trace.HitEntity != IntPtr.Zero)
+            if (BlockCamera)
             {
-                var hitEntity = new CEntityInstance(trace.HitEntity);
-                if (hitEntity.IsValid)
+                bool isZone = false;
+                if (trace.HitEntity != IntPtr.Zero)
                 {
-                    isZone = IsZoneEntity(hitEntity);
+                    var hitEntity = new CEntityInstance(trace.HitEntity);
+                    if (hitEntity.IsValid)
+                    {
+                        isZone = IsZoneEntity(hitEntity);
+                    }
                 }
-            }
 
-            if (isZone)
-            {
-                finalPos = targetCamPos;
-            }
-            else
-            {
-                Vector hitVec = trace.Position.ToVector();
-                float distanceToWall = (hitVec - eyePos).Length();
-
-                float clampedDistance;
-
-                if (distanceToWall < 16f)
+                if (isZone)
                 {
-                    clampedDistance = 10f;
-                }
-                else if (distanceToWall < desiredDistance)
-                {
-                    clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
+                    finalPos = targetCamPos;
                 }
                 else
                 {
-                    clampedDistance = desiredDistance;
-                }
+                    Vector hitVec = trace.Position.ToVector();
+                    float distanceToWall = (hitVec - eyePos).Length();
 
-                finalPos = eyePos + backwardDir * clampedDistance;
+                    float clampedDistance;
+
+                    if (distanceToWall < 16f)
+                    {
+                        clampedDistance = 10f;
+                    }
+                    else if (distanceToWall < desiredDistance)
+                    {
+                        clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
+                    }
+                    else
+                    {
+                        clampedDistance = desiredDistance;
+                    }
+
+                    finalPos = eyePos + backwardDir * clampedDistance;
+                }
+            }
+            else
+            {
+                finalPos = targetCamPos;
             }
         }
         else

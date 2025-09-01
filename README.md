@@ -26,7 +26,10 @@ Please refer to the license terms of the original project.
 - Admin-only access (configurable)
 - Configurable messages and behavior
 
-<p align="left"> <img src="https://github.com/KKNecmi/ThirdPerson-Revamped/blob/main/ThirdPerson/images/ScreenShotThirdPerson.png" alt="ThirdPerson Screenshot" width="300"/> </p>
+<p align="left">
+  <img src="https://github.com/KKNecmi/ThirdPerson-Revamped/blob/main/ThirdPerson/images/BlockCameraEnabled.png" width="48%" style="margin-right:2%">
+  <img src="https://github.com/KKNecmi/ThirdPerson-Revamped/blob/main/ThirdPerson/images/BlockCameraDisabled.png" width="48%">
+</p>
 
 ---
 
