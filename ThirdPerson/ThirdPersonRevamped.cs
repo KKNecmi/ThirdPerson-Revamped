@@ -36,7 +36,7 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.5";
+        public override string ModuleVersion => "1.0.6";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
