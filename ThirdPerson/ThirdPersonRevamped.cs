@@ -36,7 +36,7 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.6";
+        public override string ModuleVersion => "1.0.7";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
@@ -48,12 +48,8 @@ namespace ThirdPersonRevamped
             BlockCamera = config.UseBlockCamera;
         }
 
-        public static Dictionary<CCSPlayerController, CDynamicProp> thirdPersonPool =
-            new Dictionary<CCSPlayerController, CDynamicProp>();
-        public static Dictionary<
-            CCSPlayerController,
-            CPhysicsPropMultiplayer
-        > smoothThirdPersonPool = new Dictionary<CCSPlayerController, CPhysicsPropMultiplayer>();
+        public static Dictionary<CCSPlayerController, CDynamicProp> thirdPersonPool = new Dictionary<CCSPlayerController, CDynamicProp>();
+        public static Dictionary<CCSPlayerController, CPointCamera> smoothThirdPersonPool = new();
 
         public static Dictionary<CCSPlayerController, WeaponList> weapons =
             new Dictionary<CCSPlayerController, WeaponList>();
@@ -94,7 +90,7 @@ namespace ThirdPersonRevamped
 
                 var now = GetTimeSeconds();
 
-                camera.UpdateCameraSmooth(player);
+                camera.UpdateCameraSmooth(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight);
             }
 
             foreach (var data in thirdPersonPool)
@@ -271,45 +267,33 @@ namespace ThirdPersonRevamped
         {
             if (!smoothThirdPersonPool.ContainsKey(caller))
             {
-                var _cameraProp = Utilities.CreateEntityByName<CPhysicsPropMultiplayer>(
-                    "prop_physics_multiplayer"
-                );
-
+                var _cameraProp = Utilities.CreateEntityByName<CPointCamera>("point_camera");
                 if (_cameraProp == null)
                 {
                     return;
                 }
 
-                _cameraProp.SetModel("models/editor/axis_helper_thick.mdl");
                 _cameraProp.DispatchSpawn();
-                _cameraProp.SetColor(Color.FromArgb(0, 255, 255, 255));
-
-                _cameraProp.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_NEVER;
-                _cameraProp.Collision.SolidFlags = 12;
-                _cameraProp.Collision.SolidType = SolidType_t.SOLID_VPHYSICS;
 
                 var initialPosition = caller.CalculatePositionInFront(-110, 75);
                 var viewAngle = caller.PlayerPawn.Value?.V_angle;
 
                 _cameraProp.Teleport(initialPosition, viewAngle, new Vector());
 
-                AddTimer(
-                    0.1f,
-                    () =>
+                Server.NextFrame(() =>
+                {
+                    if (_cameraProp.IsValid && caller.IsValid && caller.PlayerPawn.IsValid)
                     {
-                        if (_cameraProp.IsValid && caller.IsValid && caller.PlayerPawn.IsValid)
-                        {
-                            caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
-                                .EntityHandle
-                                .Raw;
-                            Utilities.SetStateChanged(
-                                caller.PlayerPawn.Value,
-                                "CBasePlayerPawn",
-                                "m_pCameraServices"
-                            );
-                        }
+                        caller.PlayerPawn.Value!.CameraServices!.ViewEntity.Raw = _cameraProp
+                            .EntityHandle
+                            .Raw;
+                        Utilities.SetStateChanged(
+                            caller.PlayerPawn.Value,
+                            "CBasePlayerPawn",
+                            "m_pCameraServices"
+                        );
                     }
-                );
+                });
 
                 smoothThirdPersonPool.Add(caller, _cameraProp);
                 caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
@@ -459,6 +443,12 @@ namespace ThirdPersonRevamped
 
         [JsonPropertyName("SmoothCamDuration")]
         public float SmoothDuration { get; set; } = 0.05f;
+
+        [JsonPropertyName("ThirdPersonDistance")]
+        public float ThirdPersonDistance { get; set; } = 110f;
+
+        [JsonPropertyName("ThirdPersonHeight")]
+        public float ThirdPersonHeight { get; set; } = 76f;
 
         [JsonPropertyName("StripOnUse")]
         public bool StripOnUse { get; set; } = false;

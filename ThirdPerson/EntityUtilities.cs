@@ -15,10 +15,6 @@ namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {
-    private static readonly Dictionary<ulong, Vector> LastFallbackCameraPos = new();
-    private static readonly Dictionary<ulong, QAngle> LastCameraAngles = new();
-    private static readonly Dictionary<ulong, Vector> LastGoodCameraPos = new();
-    private static readonly Dictionary<ulong, float> LastZUpdateTime = new();
 
     private static float GetTimeSeconds() =>
         (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
@@ -41,30 +37,6 @@ public static class EntityUtilities
 
             Console.WriteLine(fullMessage);
         }
-    }
-
-    private static bool IsZoneEntity(CEntityInstance entity)
-    {
-        if (!entity.IsValid)
-            return false;
-
-        string className = entity.DesignerName;
-
-        string targetName = entity.Entity?.Name ?? "";
-
-        return className.Contains("trigger_")
-            || targetName.Contains("timer_zone")
-            || targetName.Contains("start_zone")
-            || targetName.Contains("end_zone")
-            || targetName.Contains("bonus_zone");
-    }
-
-    private static CEntityInstance[] GetZoneEntities()
-    {
-        return Utilities
-            .FindAllEntitiesByDesignerName<CEntityInstance>("trigger_multiple")
-            .Where(IsZoneEntity)
-            .ToArray();
     }
 
     private static float MoveTowards(float current, float target, float baseStepSize)
@@ -107,38 +79,11 @@ public static class EntityUtilities
         }
     }
 
-    public static void SetColor(this CPhysicsPropMultiplayer? prop, Color colour)
-    {
-        if (prop != null && prop.IsValid)
-        {
-            prop.Render = colour;
-            Utilities.SetStateChanged(prop, "CBaseModelEntity", "m_clrRender");
-        }
-    }
-
-    public static void UpdateCameraPositionRaw(
-        CCSPlayerController player,
-        CPhysicsPropMultiplayer camera
-    )
-    {
-        var pawn = player.PlayerPawn?.Value;
-        if (pawn == null || pawn.AbsOrigin == null)
-            return;
-
-        float desiredDistance = 100.0f;
-        float verticalOffset = 70.0f;
-
-        Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
-        QAngle targetAngle = pawn.V_angle;
-
-        camera.Teleport(targetPos, targetAngle, new Vector());
-    }
-
     public static void UpdateCamera(this CDynamicProp _cameraProp, CCSPlayerController player)
     {
         if (player.IsNullOrInvalid() || !_cameraProp.IsValid)
             return;
-
+            
         var pawn = player.PlayerPawn!.Value!;
         float safeDistance = player.CalculateCollisionSafeDistance(90f, 10f, 60f);
 
@@ -149,102 +94,30 @@ public static class EntityUtilities
         _cameraProp.Teleport(cameraPos, cameraAngle, new Vector());
     }
 
-    private static readonly Dictionary<ulong, float> LastCameraDistances = new();
-
-    private const int SmoothCamBaseStepSize = 32;
-
     public static void UpdateCameraSmooth(
-        this CPhysicsPropMultiplayer prop,
-        CCSPlayerController player
+        this CPointCamera prop,
+        CCSPlayerController player,
+        float desiredDistance,
+        float verticalOffset
     )
     {
         if (player.IsNullOrInvalid() || !prop.IsValid)
             return;
 
         var pawn = player.PlayerPawn?.Value;
-
-        const float desiredDistance = 90f;
-        const float minHeightAbovePlayer = 70f;
-        const float maxHeightAbovePlayer = 110f;
-        const float minDistanceFromPlayer = 78f;
-        const float maxDistanceFromPlayer = 79f;
-        const float positionStabilization = 0.3f;
-
-        float safeDistance = player.CalculateCollisionSafeDistance(desiredDistance, 10f, 70f);
-        Vector targetPos = player.CalculateSafeCameraPosition(safeDistance, 70f);
-
         if (pawn == null || pawn.AbsOrigin == null)
             return;
 
-        Vector currentPos = prop.AbsOrigin ?? new Vector();
-        Vector playerPos = pawn.AbsOrigin;
-
-        float minZ = playerPos.Z + minHeightAbovePlayer;
-        float maxZ = playerPos.Z + maxHeightAbovePlayer;
-
-        targetPos.Z = Math.Clamp(targetPos.Z, minZ, maxZ);
-
-        float currentTime = GetTimeSeconds();
-        float timeSinceLastUpdate =
-            currentTime
-            - (
-                LastZUpdateTime.TryGetValue(player.SteamID, out float lastTime)
-                    ? lastTime
-                    : currentTime
-            );
-        LastZUpdateTime[player.SteamID] = currentTime;
-
-        float verticalVelocity = Math.Abs(pawn.AbsVelocity.Z);
-        float horizontalSpeed = pawn.AbsVelocity.Length2D();
-
-        float maxLerp = 0.45f;
-        float minLerp = 0.06f;
-        float speedT = Math.Clamp(horizontalSpeed / 300f, 0f, 1f);
-        float lerpFactor = minLerp + (maxLerp - minLerp) * speedT;
-
-        float effectiveLerp = Math.Clamp(lerpFactor * positionStabilization, 0.05f, 0.5f);
-
-        Vector smoothedPos = currentPos.Lerp(targetPos, effectiveLerp);
-
-        if (LastGoodCameraPos.TryGetValue(player.SteamID, out var lastGoodPos))
-        {
-            float zDiff = smoothedPos.Z - lastGoodPos.Z;
-
-            float zResponse = Math.Clamp(Math.Max(verticalVelocity * 0.1f, 5f), 10f, 80f);
-            float maxAllowedZChange = Math.Max(zResponse * timeSinceLastUpdate, 0.5f);
-
-            if (Math.Abs(zDiff) > maxAllowedZChange)
-            {
-                smoothedPos.Z = lastGoodPos.Z + Math.Sign(zDiff) * maxAllowedZChange;
-            }
-
-            if (verticalVelocity < 5f && horizontalSpeed < 50f)
-            {
-                LastFallbackCameraPos[player.SteamID] = smoothedPos;
-            }
-        }
-
-        smoothedPos.Z = Math.Clamp(smoothedPos.Z, minZ, maxZ);
-
-        Vector toPlayer = playerPos - smoothedPos;
-        float currentDistance = toPlayer.Length();
-        if (currentDistance < minDistanceFromPlayer || currentDistance > maxDistanceFromPlayer)
-        {
-            Vector direction = toPlayer.Normalized();
-            smoothedPos =
-                playerPos
-                - direction
-                    * Math.Clamp(
-                        currentDistance,
-                        minDistanceFromPlayer,
-                        Math.Min(desiredDistance, maxDistanceFromPlayer)
-                    );
-            smoothedPos.Z = Math.Max(smoothedPos.Z, minZ);
-        }
-
+        Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
         QAngle targetAngle = pawn.V_angle;
+
+        Vector currentPos = prop.AbsOrigin ?? new Vector();
+
+        float lerpFactor = 0.3f;
+        
+        Vector smoothedPos = currentPos.Lerp(targetPos, lerpFactor);
+
         prop.Teleport(smoothedPos, targetAngle, new Vector());
-        LastGoodCameraPos[player.SteamID] = smoothedPos;
     }
 
     public static bool IsMoving(this CCSPlayerController player)
@@ -254,29 +127,6 @@ public static class EntityUtilities
             return false;
 
         return velocity.Length() > 15f || Math.Abs(velocity.Z) > 10f;
-    }
-
-    public static Vector CalculateVelocity(Vector positionA, Vector positionB, float timeDuration)
-    {
-        Vector directionVector = positionB - positionA;
-
-        float distance = directionVector.Length();
-
-        if (timeDuration == 0)
-        {
-            timeDuration = 1;
-        }
-
-        float velocityMagnitude = distance / timeDuration;
-
-        if (distance != 0)
-        {
-            directionVector /= distance;
-        }
-
-        Vector velocityVector = directionVector * velocityMagnitude;
-
-        return velocityVector;
     }
 
     public static Vector CalculatePositionInFront(
@@ -404,49 +254,14 @@ public static class EntityUtilities
             return new Vector(0, 0, 0);
 
         var pawn = player.PlayerPawn.Value;
-        if (pawn?.EyeAngles == null)
-            return new Vector(0, 0, 0);
-
         Vector pawnPos = pawn.AbsOrigin;
 
         float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
-        float pitchRadians = pawn.V_angle.X * (float)Math.PI / 180f;
-
-        float pitchFactor =
-            1.0f - Math.Clamp(Math.Abs(pitchRadians) / ((float)Math.PI / 2f), 0, 0.5f);
-        verticalOffset *= pitchFactor;
-
-        var eyePos = pawnPos + new Vector(0, 0, verticalOffset);
         var backwardDir = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
-
+        var eyePos = pawnPos + new Vector(0, 0, verticalOffset);
         var targetCamPos = eyePos + backwardDir * desiredDistance;
 
-        float minAllowedZ = pawnPos.Z;
-        var groundTrace = TraceRay.TraceShape(
-            targetCamPos + new Vector(0, 0, 50),
-            targetCamPos + new Vector(0, 0, -200),
-            (ulong)TraceMask.MaskSolid,
-            0ul,
-            pawn.Handle
-        );
-
-        if (groundTrace.DidHit())
-        {
-            bool isZone = false;
-            if (groundTrace.HitEntity != IntPtr.Zero)
-            {
-                var hitEntity = new CEntityInstance(groundTrace.HitEntity);
-                if (hitEntity.IsValid)
-                {
-                    isZone = IsZoneEntity(hitEntity);
-                }
-            }
-
-            if (!isZone)
-            {
-                minAllowedZ = Math.Max(minAllowedZ, groundTrace.Position.Z + 15f);
-            }
-        }
+        Vector finalPos = targetCamPos;
 
         var trace = TraceRay.GetGameTraceByEyePosition(
             player,
@@ -454,144 +269,28 @@ public static class EntityUtilities
             (ulong)TraceMask.MaskShot
         );
 
-        Vector finalPos;
-
-        if (trace.DidHit())
+        if (trace.DidHit() && BlockCamera)
         {
-            if (BlockCamera)
-            {
-                bool isZone = false;
-                if (trace.HitEntity != IntPtr.Zero)
-                {
-                    var hitEntity = new CEntityInstance(trace.HitEntity);
-                    if (hitEntity.IsValid)
-                    {
-                        isZone = IsZoneEntity(hitEntity);
-                    }
-                }
-
-                if (isZone)
-                {
-                    finalPos = targetCamPos;
-                }
-                else
-                {
-                    Vector hitVec = trace.Position.ToVector();
-                    float distanceToWall = (hitVec - eyePos).Length();
-
-                    float clampedDistance;
-
-                    if (distanceToWall < 16f)
-                    {
-                        clampedDistance = 10f;
-                    }
-                    else if (distanceToWall < desiredDistance)
-                    {
-                        clampedDistance = Math.Clamp(distanceToWall - 6f, 10f, desiredDistance);
-                    }
-                    else
-                    {
-                        clampedDistance = desiredDistance;
-                    }
-
-                    finalPos = eyePos + backwardDir * clampedDistance;
-                }
-            }
-            else
-            {
-                finalPos = targetCamPos;
-            }
-        }
-        else
-        {
-            finalPos = targetCamPos;
+            Vector hitVec = trace.Position.ToVector();
+            float distanceToWall = (hitVec - eyePos).Length();
+            float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
+            finalPos = eyePos + backwardDir * clampedDistance;
         }
 
-        if (finalPos.Z < minAllowedZ)
-        {
-            finalPos.Z = minAllowedZ;
-        }
-
-        if (LastGoodCameraPos.TryGetValue(player.SteamID, out var lastPos))
-        {
-            float zDiff = finalPos.Z - lastPos.Z;
-
-            if (player.IsMoving())
-            {
-                float lerpedZ = lastPos.Z + zDiff * 0.15f;
-
-                if (Math.Abs(zDiff) < 0.25f)
-                {
-                    finalPos.Z = lastPos.Z;
-                }
-                else if (player.PlayerPawn.Value.AbsVelocity.Length2D() > 30f)
-                {
-                    finalPos.Z = lastPos.Z + zDiff * 0.2f;
-                }
-                else
-                {
-                    finalPos.Z = lastPos.Z;
-                }
-            }
-            else if (Math.Abs(player.PlayerPawn.Value.AbsVelocity.Z) < 5f)
-            {
-                finalPos.Z = lastPos.Z;
-            }
-        }
-
-        if ((finalPos - pawnPos).Length() < 10f)
-        {
-            finalPos = pawnPos - new Vector(0, 0, -70f);
-        }
-
-        LastGoodCameraPos[player.SteamID] = finalPos;
         return finalPos;
-    }
-
-    public static Vector CalculateSafeCameraPosition_StaticZ(
-        this CCSPlayerController player,
-        float desiredDistance,
-        float fixedZ
-    )
-    {
-        var pawn = player.PlayerPawn?.Value;
-        if (pawn == null || pawn.AbsOrigin == null || pawn.V_angle == null)
-            return new Vector(0, 0, 0);
-
-        float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
-        var backwardDir = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
-        var eyePos = new Vector(pawn.AbsOrigin.X, pawn.AbsOrigin.Y, fixedZ);
-        var targetCamPos = eyePos + backwardDir * desiredDistance;
-
-        return targetCamPos;
     }
 
     public static Vector Lerp(this Vector from, Vector to, float t)
     {
-        return new Vector(
-            from.X + (to.X - from.X) * t,
-            from.Y + (to.Y - from.Y) * t,
-            from.Z + (to.Z - from.Z) * t
-        );
+        to.X = from.X + (to.X - from.X) * t;
+        to.Y = from.Y + (to.Y - from.Y) * t;
+        to.Z = from.Z + (to.Z - from.Z) * t;
+        return to;
     }
-
+    
     public static Vector ToVector(this System.Numerics.Vector3 v)
     {
         return new Vector(v.X, v.Y, v.Z);
-    }
-
-    public static float LerpZ(float from, float to, float t)
-    {
-        return from + (to - from) * t;
-    }
-
-    public static Vector Round(this Vector vec, float step = 0.1f)
-    {
-        return new Vector(
-            (float)Math.Round(vec.X / step) * step,
-            (float)Math.Round(vec.Y / step) * step,
-            (float)Math.Round(vec.Z / step) * step
-        );
     }
 
     public static float Clamp(float value, float min, float max)
@@ -602,13 +301,7 @@ public static class EntityUtilities
             return max;
         return value;
     }
-
-    public static Vector Normalized(this Vector vec)
-    {
-        float length = vec.Length();
-        return length == 0f ? new Vector(0, 0, 0) : vec / length;
-    }
-
+    
     public static float Length(this Vector vec)
     {
         return (float)Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
@@ -622,5 +315,11 @@ public static class EntityUtilities
     public static bool IsNullOrInvalid(this CCSPlayerController? player)
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
+    }
+
+    public static Vector Normalized(this Vector vec)
+    {
+        float length = vec.Length();
+        return length == 0f ? new Vector(0, 0, 0) : vec / length;
     }
 }
