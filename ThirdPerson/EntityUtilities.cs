@@ -1,24 +1,14 @@
 using System.Drawing;
-using System.Linq;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
-using CounterStrikeSharp.API.Modules.Admin;
-using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 using CS2TraceRay.Class;
 using CS2TraceRay.Enum;
-using CS2TraceRay.Struct;
 
 namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {
-
-    private static float GetTimeSeconds() =>
-        (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
-
     private static bool BlockCamera => ThirdPersonRevamped.BlockCamera;
 
     public static class DebugLogger
@@ -39,37 +29,6 @@ public static class EntityUtilities
         }
     }
 
-    private static float MoveTowards(float current, float target, float baseStepSize)
-    {
-        current = NormalizeAngle(current);
-        target = NormalizeAngle(target);
-
-        float delta = target - current;
-
-        if (delta > 180)
-            delta -= 360;
-        else if (delta < -180)
-            delta += 360;
-
-        float dynamicStepSize = Math.Min(baseStepSize * Math.Abs(delta) / 180f, Math.Abs(delta));
-
-        if (Math.Abs(delta) <= dynamicStepSize)
-        {
-            return target;
-        }
-
-        return NormalizeAngle(current + Math.Sign(delta) * dynamicStepSize);
-    }
-
-    private static float NormalizeAngle(float angle)
-    {
-        while (angle > 180)
-            angle -= 360;
-        while (angle < -180)
-            angle += 360;
-        return angle;
-    }
-
     public static void SetColor(this CDynamicProp? prop, Color colour)
     {
         if (prop != null && prop.IsValid)
@@ -79,17 +38,21 @@ public static class EntityUtilities
         }
     }
 
-    public static void UpdateCamera(this CDynamicProp _cameraProp, CCSPlayerController player)
+    public static void UpdateCamera(
+        this CDynamicProp _cameraProp,
+        CCSPlayerController player,
+        float desiredDistance,
+        float verticalOffset
+    )
     {
         if (player.IsNullOrInvalid() || !_cameraProp.IsValid)
             return;
             
-        var pawn = player.PlayerPawn!.Value!;
-        float safeDistance = player.CalculateCollisionSafeDistance(90f, 10f, 60f);
-
-        Vector cameraPos = player.CalculateSafeCameraPosition(safeDistance, 90);
-
-        QAngle cameraAngle = player.PlayerPawn.Value!.EyeAngles;
+        var pawn = player.PlayerPawn.Value;
+        if (pawn == null) return;
+        
+        Vector cameraPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
+        QAngle cameraAngle = pawn.V_angle;
 
         _cameraProp.Teleport(cameraPos, cameraAngle, new Vector());
     }
@@ -118,15 +81,6 @@ public static class EntityUtilities
         Vector smoothedPos = currentPos.Lerp(targetPos, lerpFactor);
 
         prop.Teleport(smoothedPos, targetAngle, new Vector());
-    }
-
-    public static bool IsMoving(this CCSPlayerController player)
-    {
-        var velocity = player.PlayerPawn?.Value?.AbsVelocity;
-        if (velocity == null)
-            return false;
-
-        return velocity.Length() > 15f || Math.Abs(velocity.Z) > 10f;
     }
 
     public static Vector CalculatePositionInFront(
@@ -183,65 +137,6 @@ public static class EntityUtilities
     public static float Dot(this Vector vector1, Vector vector2)
     {
         return vector1.X * vector2.X + vector1.Y * vector2.Y + vector1.Z * vector2.Z;
-    }
-
-    public static void Health(this CCSPlayerController player, int health)
-    {
-        if (player.PlayerPawn == null || player.PlayerPawn.Value == null)
-        {
-            return;
-        }
-
-        player.Health = health;
-        player.PlayerPawn.Value.Health = health;
-
-        if (health > 100)
-        {
-            player.MaxHealth = health;
-            player.PlayerPawn.Value.MaxHealth = health;
-        }
-
-        Utilities.SetStateChanged(player.PlayerPawn.Value, "CBaseEntity", "m_iHealth");
-    }
-
-    public static float CalculateCollisionSafeDistance(
-        this CCSPlayerController player,
-        float maxDistance = 110f,
-        float checkStep = 10f,
-        float verticalOffset = 90f
-    )
-    {
-        var pawn = player.PlayerPawn?.Value;
-
-        float safeDistance = maxDistance;
-
-        if (pawn?.AbsOrigin == null)
-            return safeDistance;
-
-        float yawRadians = pawn.V_angle!.Y * (float)Math.PI / 180f;
-        var backward = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
-        var allPlayers = Utilities.GetPlayers();
-
-        for (float d = checkStep; d <= maxDistance; d += checkStep)
-        {
-            var checkPos = pawn.AbsOrigin + backward * d + new Vector(0, 0, verticalOffset - 30f);
-
-            var nearbyPlayers = allPlayers.Where(p =>
-                p != null
-                && p.IsValid
-                && p.PlayerPawn.IsValid
-                && p.PlayerPawn.Value?.AbsOrigin != null
-                && (p.PlayerPawn.Value.AbsOrigin - checkPos).Length() < 8.0f
-            );
-
-            if (nearbyPlayers.Any())
-            {
-                safeDistance = d - checkStep;
-                break;
-            }
-        }
-
-        return safeDistance;
     }
 
     public static Vector CalculateSafeCameraPosition(
@@ -307,19 +202,8 @@ public static class EntityUtilities
         return (float)Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
     }
 
-    public static float Length2D(this Vector vec)
-    {
-        return (float)Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y);
-    }
-
     public static bool IsNullOrInvalid(this CCSPlayerController? player)
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
-    }
-
-    public static Vector Normalized(this Vector vec)
-    {
-        float length = vec.Length();
-        return length == 0f ? new Vector(0, 0, 0) : vec / length;
     }
 }

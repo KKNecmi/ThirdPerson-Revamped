@@ -1,16 +1,10 @@
-using System.Diagnostics.SymbolStore;
 using System.Drawing;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Events;
 using CounterStrikeSharp.API.Modules.Utils;
-using VectorSystem = System.Numerics;
 
 namespace ThirdPersonRevamped
 {
@@ -88,8 +82,6 @@ namespace ThirdPersonRevamped
                 if (player.IsNullOrInvalid() || !camera.IsValid)
                     continue;
 
-                var now = GetTimeSeconds();
-
                 camera.UpdateCameraSmooth(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight);
             }
 
@@ -101,11 +93,7 @@ namespace ThirdPersonRevamped
                 if (player.IsNullOrInvalid() || !camera.IsValid)
                     continue;
 
-                var pawn = player.PlayerPawn.Value;
-
-                var cameraPos = player.CalculateSafeCameraPosition(90f, 90f);
-                var cameraAngle = player.PlayerPawn.Value?.V_angle;
-                camera.Teleport(cameraPos, cameraAngle, new Vector());
+                camera.UpdateCamera(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight);
             }
         }
 
@@ -357,12 +345,6 @@ namespace ThirdPersonRevamped
                 }
             }
         }
-
-        private static float GetTimeSeconds()
-        {
-            return (float)DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000f;
-        }
-
         public string ReplaceColorTags(string input)
         {
             string[] colorPatterns =
@@ -440,9 +422,6 @@ namespace ThirdPersonRevamped
 
         [JsonPropertyName("UseSmoothCam")]
         public bool UseSmooth { get; set; } = true;
-
-        [JsonPropertyName("SmoothCamDuration")]
-        public float SmoothDuration { get; set; } = 0.05f;
 
         [JsonPropertyName("ThirdPersonDistance")]
         public float ThirdPersonDistance { get; set; } = 110f;

@@ -62,7 +62,6 @@ Please refer to the license terms of the original project.
   "NoPermission": "You don\u0027t have to access this command.",
   "BlockCamera": true,
   "UseSmoothCam": true,
-  "SmoothCamDuration": 0.05,
   "ThirdPersonDistance": 110,
   "ThirdPersonHeight": 76,
   "StripOnUse": false,
