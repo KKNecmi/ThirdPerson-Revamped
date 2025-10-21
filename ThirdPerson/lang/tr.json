@@ -1,0 +1,6 @@
+{
+  "OnActivated": " | {YELLOW}TP {GREEN}Açık",
+  "OnDeactivated": " | {YELLOW}TP {RED}Kapalı",
+  "Prefix": " [{BLUE}ThirdPerson Revamped",
+  "NoPermission": "Bu komuta erişim izniniz yok."
+}

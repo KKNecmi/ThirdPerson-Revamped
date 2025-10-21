@@ -1,0 +1,6 @@
+{
+  "OnActivated": " | {YELLOW}ThirdPerson {GREEN}Activated",
+  "OnDeactivated": " | {YELLOW}ThirdPerson {RED}Deactivated",
+  "Prefix": " [{BLUE}ThirdPerson Revamped",
+  "NoPermission": "You don't have to access this command."
+}

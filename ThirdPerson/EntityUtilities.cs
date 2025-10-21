@@ -47,10 +47,10 @@ public static class EntityUtilities
     {
         if (player.IsNullOrInvalid() || !_cameraProp.IsValid)
             return;
-            
+
         var pawn = player.PlayerPawn.Value;
         if (pawn == null) return;
-        
+
         Vector cameraPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
         QAngle cameraAngle = pawn.V_angle;
 
@@ -77,7 +77,7 @@ public static class EntityUtilities
         Vector currentPos = prop.AbsOrigin ?? new Vector();
 
         float lerpFactor = 0.3f;
-        
+
         Vector smoothedPos = currentPos.Lerp(targetPos, lerpFactor);
 
         prop.Teleport(smoothedPos, targetAngle, new Vector());
@@ -182,7 +182,7 @@ public static class EntityUtilities
         to.Z = from.Z + (to.Z - from.Z) * t;
         return to;
     }
-    
+
     public static Vector ToVector(this System.Numerics.Vector3 v)
     {
         return new Vector(v.X, v.Y, v.Z);
@@ -196,7 +196,7 @@ public static class EntityUtilities
             return max;
         return value;
     }
-    
+
     public static float Length(this Vector vec)
     {
         return (float)Math.Sqrt(vec.X * vec.X + vec.Y * vec.Y + vec.Z * vec.Z);
