@@ -5,15 +5,6 @@ namespace ThirdPersonRevamped;
 
 public class Config : BasePluginConfig
 {
-    [JsonPropertyName("OnActivated")]
-    public string OnActivated { get; set; } = " | {YELLOW}ThirdPerson {GREEN}Activated";
-
-    [JsonPropertyName("OnDeactivated")]
-    public string OnDeactivated { get; set; } = " | {YELLOW}ThirdPerson {RED}Deactivated";
-
-    [JsonPropertyName("Prefix")]
-    public string Prefix { get; set; } = " [{BLUE}ThirdPerson Revamped";
-
     [JsonPropertyName("CustomTPCommand")]
     public string CustomTPCommand { get; set; } = "tp";
 
@@ -22,9 +13,6 @@ public class Config : BasePluginConfig
 
     [JsonPropertyName("OnlyAdminFlag")]
     public string Flag { get; set; } = "@css/slay";
-
-    [JsonPropertyName("NoPermission")]
-    public string NoPermission { get; set; } = "You don't have to access this command.";
 
     [JsonPropertyName("BlockCamera")]
     public bool UseBlockCamera { get; set; } = true;

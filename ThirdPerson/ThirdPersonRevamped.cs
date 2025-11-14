@@ -182,7 +182,7 @@ namespace ThirdPersonRevamped
                     "CBasePlayerPawn",
                     "m_pCameraServices"
                 );
-                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
+                caller.PrintToChat(Localizer["Prefix"] + Localizer["OnActivated"]);
                 thirdPersonPool.Add(caller, _cameraProp);
 
                 AddTimer(
@@ -233,7 +233,7 @@ namespace ThirdPersonRevamped
                 );
                 if (thirdPersonPool[caller] != null && thirdPersonPool[caller].IsValid)
                     thirdPersonPool[caller].Remove();
-                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnDeactivated));
+                caller.PrintToChat(Localizer["Prefix"] + Localizer["OnDeactivated"]);
                 thirdPersonPool.Remove(caller);
 
                 caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = false;
@@ -284,7 +284,7 @@ namespace ThirdPersonRevamped
                 });
 
                 smoothThirdPersonPool.Add(caller, _cameraProp);
-                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnActivated));
+                caller.PrintToChat(Localizer["Prefix"] + Localizer["OnActivated"]);
 
                 if (Config.StripOnUse)
                 {
@@ -330,7 +330,7 @@ namespace ThirdPersonRevamped
                     smoothThirdPersonPool[caller].Remove();
 
                 smoothThirdPersonPool.Remove(caller);
-                caller.PrintToChat(ReplaceColorTags(Config.Prefix + Config.OnDeactivated));
+                caller.PrintToChat(Localizer["Prefix"] + Localizer["OnDeactivated"]);
                 caller.PlayerPawn.Value.WeaponServices!.PreventWeaponPickup = false;
 
                 if (Config.StripOnUse && weapons.ContainsKey(caller))
