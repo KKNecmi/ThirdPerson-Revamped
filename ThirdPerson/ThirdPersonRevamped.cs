@@ -132,7 +132,7 @@ namespace ThirdPersonRevamped
         {
             if (Config.UseOnlyAdmin && !AdminManager.PlayerHasPermissions(caller, Config.Flag))
             {
-                command.ReplyToCommand(ReplaceColorTags(Config.NoPermission));
+                command.ReplyToCommand(Localizer["Prefix"] + Localizer["NoPermission"]);
                 return;
             }
 
