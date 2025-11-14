@@ -1,5 +1,4 @@
 using System.Drawing;
-using System.Text.Json.Serialization;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
@@ -30,7 +29,7 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.7";
+        public override string ModuleVersion => "1.0.8";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
