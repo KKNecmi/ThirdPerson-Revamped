@@ -29,7 +29,7 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.0.8";
+        public override string ModuleVersion => "1.0.9";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
@@ -391,48 +391,6 @@ namespace ThirdPersonRevamped
                     }
                 }
             }
-        }
-        public string ReplaceColorTags(string input)
-        {
-            string[] colorPatterns =
-            {
-                "{DEFAULT}",
-                "{DARKRED}",
-                "{LIGHTPURPLE}",
-                "{GREEN}",
-                "{OLIVE}",
-                "{LIME}",
-                "{RED}",
-                "{GREY}",
-                "{YELLOW}",
-                "{SILVER}",
-                "{BLUE}",
-                "{DARKBLUE}",
-                "{ORANGE}",
-                "{PURPLE}",
-            };
-            string[] colorReplacements =
-            {
-                "\x01",
-                "\x02",
-                "\x03",
-                "\x04",
-                "\x05",
-                "\x06",
-                "\x07",
-                "\x08",
-                "\x09",
-                "\x0A",
-                "\x0B",
-                "\x0C",
-                "\x10",
-                "\x0E",
-            };
-
-            for (var i = 0; i < colorPatterns.Length; i++)
-                input = input.Replace(colorPatterns[i], colorReplacements[i]);
-
-            return input;
         }
     }
 
