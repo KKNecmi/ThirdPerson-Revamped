@@ -206,4 +206,26 @@ public static class EntityUtilities
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
     }
+    public static void ParentTo(this CBaseEntity entity, CBaseEntity parent)
+    {
+        if (entity != null && entity.IsValid && parent != null && parent.IsValid)
+        {
+            entity.AcceptInput("SetParent", parent, entity, "!activator");
+        }
+    }
+
+    public static void FollowEntity(this CBaseEntity entity, CBaseEntity target)
+    {
+        if (entity != null && entity.IsValid && target != null && target.IsValid)
+        {
+            if (target is CCSPlayerController playerController && playerController.PlayerPawn.IsValid)
+            {
+                entity.AcceptInput("FollowEntity", playerController.PlayerPawn.Value, entity, "!activator");
+            }
+            else
+            {
+                entity.AcceptInput("FollowEntity", target, entity, "!activator");
+            }
+        }
+    }
 }
