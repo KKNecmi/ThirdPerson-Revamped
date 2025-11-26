@@ -53,6 +53,7 @@ namespace ThirdPersonRevamped
         {
             RegisterListener<Listeners.OnTick>(OnGameFrame);
             RegisterEventHandler<EventRoundStart>(OnRoundStart);
+            RegisterEventHandler<EventPlayerDeath>(OnPlayerDeath);
             RegisterEventHandler<EventPlayerHurt>(OnPlayerHurt, HookMode.Pre);
 
             RegisterTPCommands();
@@ -98,9 +99,56 @@ namespace ThirdPersonRevamped
 
         private HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
         {
+            foreach (var player in thirdPersonPool.Keys.ToList()) CleanupPlayer(player);
+            foreach (var player in smoothThirdPersonPool.Keys.ToList()) CleanupPlayer(player);
+
             thirdPersonPool.Clear();
             smoothThirdPersonPool.Clear();
+            weapons.Clear();
+
             return HookResult.Continue;
+        }
+
+        private HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+        {
+            var player = @event.Userid;
+            if (player != null && player.IsValid)
+            {
+                CleanupPlayer(player);
+            }
+            return HookResult.Continue;
+        }
+
+        private void CleanupPlayer(CCSPlayerController player)
+        {
+            if (smoothThirdPersonPool.TryGetValue(player, out var smoothCamera))
+            {
+                if (smoothCamera != null && smoothCamera.IsValid)
+                {
+                    smoothCamera.Remove();
+                }
+                smoothThirdPersonPool.Remove(player);
+            }
+
+            if (thirdPersonPool.TryGetValue(player, out var camera))
+            {
+                if (camera != null && camera.IsValid)
+                {
+                    camera.Remove();
+                }
+                thirdPersonPool.Remove(player);
+            }
+
+            if (weapons.ContainsKey(player))
+            {
+                weapons.Remove(player);
+            }
+
+            if (player.IsValid && player.PlayerPawn.IsValid && player.PlayerPawn.Value != null && player.PlayerPawn.Value.CameraServices != null)
+            {
+                player.PlayerPawn.Value.CameraServices.ViewEntity.Raw = uint.MaxValue;
+                Utilities.SetStateChanged(player.PlayerPawn.Value, "CBasePlayerPawn", "m_pCameraServices");
+            }
         }
 
         private HookResult OnPlayerHurt(EventPlayerHurt @event, GameEventInfo info)
