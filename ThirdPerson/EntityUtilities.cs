@@ -206,11 +206,19 @@ public static class EntityUtilities
     {
         return player == null || !player.IsValid || !player.PlayerPawn.IsValid;
     }
-    public static void ParentTo(this CBaseEntity entity, CBaseEntity parent)
+
+    private static void SetParent(this CBaseEntity entity, CBaseEntity parent, string attachment = "")
     {
-        if (entity != null && entity.IsValid && parent != null && parent.IsValid)
+        if (!entity.IsValid || !parent.IsValid)
+            return;
+            
+        if (!string.IsNullOrEmpty(attachment))
         {
-            entity.AcceptInput("SetParent", parent, entity, "!activator");
+            entity.AcceptInput("SetParent", parent, entity, attachment);
+        }
+        else
+        {
+            entity.AcceptInput("SetParent", parent, entity, "");
         }
     }
 
@@ -227,5 +235,16 @@ public static class EntityUtilities
                 entity.AcceptInput("FollowEntity", target, entity, "!activator");
             }
         }
+    }
+
+    private static Vector GetBackwardDirection(this CCSPlayerPawn pawn)
+    {
+        float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
+        return new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
+    }
+
+    private static bool HasParent(this CBaseEntity entity)
+    {
+        return entity.OwnerEntity != null && entity.OwnerEntity.IsValid;
     }
 }
