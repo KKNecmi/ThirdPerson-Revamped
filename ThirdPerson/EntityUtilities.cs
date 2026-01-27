@@ -158,12 +158,14 @@ public static class EntityUtilities
 
         Vector finalPos = targetCamPos;
 
-        var trace = TraceRay.GetGameTraceByEyePosition(
-            player,
+        var trace = TraceRay.TraceShape(
+            eyePos,
             targetCamPos,
-            (ulong)TraceMask.MaskShot
+            TraceMask.MaskShot,
+            0ul,
+            player
         );
-
+        
         if (trace.DidHit() && BlockCamera)
         {
             Vector hitVec = trace.Position.ToVector();
