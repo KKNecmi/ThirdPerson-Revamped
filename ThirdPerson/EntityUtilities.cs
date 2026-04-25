@@ -1,15 +1,20 @@
 using System.Drawing;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Utils;
+/*
 using CS2TraceRay.Class;
 using CS2TraceRay.Enum;
+*/
+using RayTraceAPI;
 
 namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {
     private static bool BlockCamera => ThirdPersonRevamped.BlockCamera;
+    private static readonly PluginCapability<CRayTraceInterface> RayTraceCapability = new("raytrace:craytraceinterface");
 
     public static class DebugLogger
     {
@@ -76,7 +81,7 @@ public static class EntityUtilities
 
         Vector currentPos = prop.AbsOrigin ?? new Vector();
 
-        float lerpFactor = 0.3f;
+        float lerpFactor = 0.25f;
 
         Vector smoothedPos = currentPos.Lerp(targetPos, lerpFactor);
 
@@ -158,6 +163,7 @@ public static class EntityUtilities
 
         Vector finalPos = targetCamPos;
 
+        /*
         var trace = TraceRay.TraceShape(
             eyePos,
             targetCamPos,
@@ -166,12 +172,55 @@ public static class EntityUtilities
             player
         );
         
+
+
         if (trace.DidHit() && BlockCamera)
         {
             Vector hitVec = trace.Position.ToVector();
             float distanceToWall = (hitVec - eyePos).Length();
             float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
             finalPos = eyePos + backwardDir * clampedDistance;
+        }
+        */
+
+        if (BlockCamera)
+        {
+            try
+            {
+                var rayTrace = RayTraceCapability.Get();
+                if (rayTrace != null)
+                {
+                    var options = new TraceOptions
+                    {
+                        InteractsWith = (ulong)(InteractionLayers.Solid | 
+                                                InteractionLayers.Window | 
+                                                InteractionLayers.PassBullets |
+                                                InteractionLayers.WorldGeometry),
+                        InteractsExclude = (ulong)(InteractionLayers.Player | 
+                                                InteractionLayers.NPC | 
+                                                InteractionLayers.Physics_Prop |
+                                                InteractionLayers.Hitboxes),
+                        DrawBeam = 1  // 1 For Debugging
+                    };
+
+                    if (rayTrace.TraceEndShape(eyePos, targetCamPos, pawn, options, out TraceResult trace))
+                    {
+                        if (trace.DidHit)
+                        {
+                            Vector hitVec = new Vector(trace.EndPosX, trace.EndPosY, trace.EndPosZ);
+                            float distanceToWall = (hitVec - eyePos).Length();
+                            float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
+                            finalPos = eyePos + backwardDir * clampedDistance;
+                            
+                            DebugLogger.Log("RayTrace", $"Hit Distance {distanceToWall:F1}, camera location {clampedDistance:F1}", player);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.Log("RayTrace", $"Trace Error: {ex.Message}", player);
+            }
         }
 
         return finalPos;
@@ -189,7 +238,7 @@ public static class EntityUtilities
     {
         return new Vector(v.X, v.Y, v.Z);
     }
-
+    
     public static float Clamp(float value, float min, float max)
     {
         if (value < min)
