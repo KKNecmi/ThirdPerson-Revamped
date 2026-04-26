@@ -163,26 +163,6 @@ public static class EntityUtilities
 
         Vector finalPos = targetCamPos;
 
-        /*
-        var trace = TraceRay.TraceShape(
-            eyePos,
-            targetCamPos,
-            TraceMask.MaskShot,
-            0ul,
-            player
-        );
-        
-
-
-        if (trace.DidHit() && BlockCamera)
-        {
-            Vector hitVec = trace.Position.ToVector();
-            float distanceToWall = (hitVec - eyePos).Length();
-            float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
-            finalPos = eyePos + backwardDir * clampedDistance;
-        }
-        */
-
         if (BlockCamera)
         {
             try
@@ -192,28 +172,17 @@ public static class EntityUtilities
                 {
                     var options = new TraceOptions
                     {
-                        InteractsWith = (ulong)(InteractionLayers.Solid | 
-                                                InteractionLayers.Window | 
-                                                InteractionLayers.PassBullets |
-                                                InteractionLayers.WorldGeometry),
-                        InteractsExclude = (ulong)(InteractionLayers.Player | 
-                                                InteractionLayers.NPC | 
-                                                InteractionLayers.Physics_Prop |
-                                                InteractionLayers.Hitboxes),
-                        DrawBeam = 1  // 1 For Debugging
+                        InteractsWith = (ulong)InteractionLayers.Solid,
+                        InteractsExclude = (ulong)InteractionLayers.Player,
+                        DrawBeam = 1
                     };
-
-                    if (rayTrace.TraceEndShape(eyePos, targetCamPos, pawn, options, out TraceResult trace))
+                    rayTrace.TraceEndShape(eyePos, targetCamPos, null, options, out TraceResult trace);
+                    if (trace.DidHit)
                     {
-                        if (trace.DidHit)
-                        {
-                            Vector hitVec = new Vector(trace.EndPosX, trace.EndPosY, trace.EndPosZ);
-                            float distanceToWall = (hitVec - eyePos).Length();
-                            float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
-                            finalPos = eyePos + backwardDir * clampedDistance;
-                            
-                            DebugLogger.Log("RayTrace", $"Hit Distance {distanceToWall:F1}, camera location {clampedDistance:F1}", player);
-                        }
+                        Vector hitVec = new Vector(trace.EndPosX, trace.EndPosY, trace.EndPosZ);
+                        float distanceToWall = (hitVec - eyePos).Length();
+                        float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
+                        finalPos = eyePos + backwardDir * clampedDistance;
                     }
                 }
             }
