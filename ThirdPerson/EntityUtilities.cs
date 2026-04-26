@@ -174,7 +174,7 @@ public static class EntityUtilities
                     {
                         InteractsWith = (ulong)InteractionLayers.Solid,
                         InteractsExclude = (ulong)InteractionLayers.Player,
-                        DrawBeam = 1
+                        DrawBeam = 0
                     };
                     rayTrace.TraceEndShape(eyePos, targetCamPos, null, options, out TraceResult trace);
                     if (trace.DidHit)
