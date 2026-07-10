@@ -25,11 +25,11 @@ Basic thirdperson camera plugin for Counter-Strike 2
 
 ## 📥 Installation
 
-> This plugin requires the following dependency: [Ray-Trace](https://github.com/FUNPLAY-pro-CS2/Ray-Trace)
+> This plugin requires [Ray-Trace](https://github.com/FUNPLAY-pro-CS2/Ray-Trace)
 
 1. Download the latest release from: [https://github.com/KKNecmi/ThirdPerson-Revamped/releases/latest](https://github.com/KKNecmi/ThirdPerson-Revamped/releases/latest) 
 2. Extract the contents of the downloaded ZIP file to the addons/counterstrikesharp/ folder.
-5. Adjust the config file in the `addons/counterstrikesharp/configs/plugins/ThirdPersonRevamped/` directory.
+3. [OPTIONAL] Adjust the config file in the `addons/counterstrikesharp/configs/plugins/ThirdPersonRevamped/` directory.
 
 ---
 
