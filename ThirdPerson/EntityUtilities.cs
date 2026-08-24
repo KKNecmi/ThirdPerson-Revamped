@@ -3,14 +3,12 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Utils;
-//using RayTraceAPI;
 
 namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {
     private static bool BlockCamera => ThirdPersonRevamped.BlockCamera;
-    //private static readonly PluginCapability<CRayTraceInterface> RayTraceCapability = new("raytrace:craytraceinterface");
 
     public static class DebugLogger
     {
@@ -161,33 +159,6 @@ public static class EntityUtilities
 
         if (BlockCamera)
         {
-            /*
-            try
-            {
-                var rayTrace = RayTraceCapability.Get();
-                if (rayTrace != null)
-                {
-                    var options = new TraceOptions
-                    {
-                        InteractsWith = (ulong)InteractionLayers.Solid,
-                        InteractsExclude = (ulong)InteractionLayers.Player,
-                        DrawBeam = 0
-                    };
-                    rayTrace.TraceEndShape(eyePos, targetCamPos, null, options, out TraceResult trace);
-                    if (trace.DidHit)
-                    {
-                        Vector hitVec = new Vector(trace.EndPosX, trace.EndPosY, trace.EndPosZ);
-                        float distanceToWall = (hitVec - eyePos).Length();
-                        float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
-                        finalPos = eyePos + backwardDir * clampedDistance;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.Log("RayTrace", $"Trace Error: {ex.Message}", player);
-            }
-            */
             var options = new TraceOptions
             {
                 InteractsWith = Masks.PlayerSolid,
