@@ -3,18 +3,14 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Utils;
-/*
-using CS2TraceRay.Class;
-using CS2TraceRay.Enum;
-*/
-using RayTraceAPI;
+//using RayTraceAPI;
 
 namespace ThirdPersonRevamped;
 
 public static class EntityUtilities
 {
     private static bool BlockCamera => ThirdPersonRevamped.BlockCamera;
-    private static readonly PluginCapability<CRayTraceInterface> RayTraceCapability = new("raytrace:craytraceinterface");
+    //private static readonly PluginCapability<CRayTraceInterface> RayTraceCapability = new("raytrace:craytraceinterface");
 
     public static class DebugLogger
     {
@@ -165,6 +161,7 @@ public static class EntityUtilities
 
         if (BlockCamera)
         {
+            /*
             try
             {
                 var rayTrace = RayTraceCapability.Get();
@@ -190,6 +187,20 @@ public static class EntityUtilities
             {
                 DebugLogger.Log("RayTrace", $"Trace Error: {ex.Message}", player);
             }
+            */
+            var options = new TraceOptions
+            {
+                InteractsWith = Masks.PlayerSolid,
+                InteractsExclude = Contents.Player
+            };
+            TraceResult trace = Trace.TraceEndShape(eyePos, targetCamPos, null, options);
+            if (trace.DidHit())
+            {
+                Vector hitVec = trace.HitPoint;
+                float distanceToWall = (hitVec - eyePos).Length();
+                float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
+                finalPos = eyePos + backwardDir * clampedDistance;
+            }
         }
 
         return finalPos;
@@ -207,7 +218,7 @@ public static class EntityUtilities
     {
         return new Vector(v.X, v.Y, v.Z);
     }
-    
+
     public static float Clamp(float value, float min, float max)
     {
         if (value < min)
