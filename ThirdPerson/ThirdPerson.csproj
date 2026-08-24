@@ -17,9 +17,4 @@
     <PackageReference Include="MySqlConnector" Version="2.3.6" />
     <PackageReference Include="YamlDotNet" Version="15.1.2" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="RayTraceApi">
-      <HintPath>..\libs\RayTraceApi.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
