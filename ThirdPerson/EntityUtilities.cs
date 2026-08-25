@@ -41,7 +41,8 @@ public static class EntityUtilities
         this CDynamicProp _cameraProp,
         CCSPlayerController player,
         float desiredDistance,
-        float verticalOffset
+        float verticalOffset,
+        float horizontalOffset
     )
     {
         if (player.IsNullOrInvalid() || !_cameraProp.IsValid)
@@ -50,7 +51,7 @@ public static class EntityUtilities
         var pawn = player.PlayerPawn.Value;
         if (pawn == null) return;
 
-        Vector cameraPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
+        Vector cameraPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset, horizontalOffset);
         QAngle cameraAngle = pawn.V_angle;
 
         _cameraProp.Teleport(cameraPos, cameraAngle, new Vector());
@@ -60,7 +61,8 @@ public static class EntityUtilities
         this CPointCamera prop,
         CCSPlayerController player,
         float desiredDistance,
-        float verticalOffset
+        float verticalOffset,
+        float horizontalOffset
     )
     {
         if (player.IsNullOrInvalid() || !prop.IsValid)
@@ -70,12 +72,12 @@ public static class EntityUtilities
         if (pawn == null || pawn.AbsOrigin == null)
             return;
 
-        Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset);
+        Vector targetPos = player.CalculateSafeCameraPosition(desiredDistance, verticalOffset, horizontalOffset);
         QAngle targetAngle = pawn.V_angle;
 
         Vector currentPos = prop.AbsOrigin ?? new Vector();
 
-        float lerpFactor = 0.25f;
+        float lerpFactor = 0.35f;
 
         Vector smoothedPos = currentPos.Lerp(targetPos, lerpFactor);
 
@@ -141,7 +143,8 @@ public static class EntityUtilities
     public static Vector CalculateSafeCameraPosition(
         this CCSPlayerController player,
         float desiredDistance,
-        float verticalOffset = 70f
+        float verticalOffset = 70f,
+        float horizontalOffset = 0f
     )
     {
         if (player.IsNullOrInvalid() || player.PlayerPawn?.Value?.AbsOrigin == null)
@@ -151,9 +154,12 @@ public static class EntityUtilities
         Vector pawnPos = pawn.AbsOrigin;
 
         float yawRadians = pawn.V_angle.Y * (float)Math.PI / 180f;
+
         var backwardDir = new Vector(-MathF.Cos(yawRadians), -MathF.Sin(yawRadians), 0);
+        var leftrightDir = new Vector(MathF.Sin(yawRadians), -MathF.Cos(yawRadians), 0);
+        
         var eyePos = pawnPos + new Vector(0, 0, verticalOffset);
-        var targetCamPos = eyePos + backwardDir * desiredDistance;
+        var targetCamPos = eyePos + (backwardDir * desiredDistance) + (leftrightDir * horizontalOffset);
 
         Vector finalPos = targetCamPos;
 
@@ -170,7 +176,7 @@ public static class EntityUtilities
                 Vector hitVec = trace.HitPoint;
                 float distanceToWall = (hitVec - eyePos).Length();
                 float clampedDistance = Math.Clamp(distanceToWall - 10f, 10f, desiredDistance);
-                finalPos = eyePos + backwardDir * clampedDistance;
+                finalPos = eyePos + (backwardDir * clampedDistance) + (leftrightDir * horizontalOffset);
             }
         }
 

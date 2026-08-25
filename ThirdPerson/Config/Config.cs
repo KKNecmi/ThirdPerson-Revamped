@@ -26,6 +26,9 @@ public class Config : BasePluginConfig
     [JsonPropertyName("ThirdPersonHeight")]
     public float ThirdPersonHeight { get; set; } = 76f;
 
+    [JsonPropertyName("ThirdPersonOffset")]
+    public float ThirdPersonOffset { get; set; } = 0f;
+
     [JsonPropertyName("StripOnUse")]
     public bool StripOnUse { get; set; } = false;
 }

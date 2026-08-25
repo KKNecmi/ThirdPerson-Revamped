@@ -29,7 +29,7 @@ namespace ThirdPersonRevamped
         }
 
         public override string ModuleName => "ThirdPersonRevamped";
-        public override string ModuleVersion => "1.1.2";
+        public override string ModuleVersion => "1.1.3";
         public override string ModuleAuthor => "Necmi";
         public override string ModuleDescription => "Improved Third Person with smooth camera";
 
@@ -82,7 +82,7 @@ namespace ThirdPersonRevamped
                 if (player.IsNullOrInvalid() || !camera.IsValid)
                     continue;
 
-                camera.UpdateCameraSmooth(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight);
+                camera.UpdateCameraSmooth(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight, Config.ThirdPersonOffset);
             }
 
             foreach (var data in thirdPersonPool)
@@ -93,7 +93,7 @@ namespace ThirdPersonRevamped
                 if (player.IsNullOrInvalid() || !camera.IsValid)
                     continue;
 
-                camera.UpdateCamera(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight);
+                camera.UpdateCamera(player, Config.ThirdPersonDistance, Config.ThirdPersonHeight, Config.ThirdPersonOffset);
             }
         }
 
